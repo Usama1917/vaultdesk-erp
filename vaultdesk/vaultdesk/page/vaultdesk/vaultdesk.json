@@ -1,0 +1,23 @@
+{
+ "doctype": "Page",
+ "module": "VaultDesk",
+ "name": "vaultdesk",
+ "page_name": "vaultdesk",
+ "roles": [
+  {
+   "role": "VaultDesk User"
+  },
+  {
+   "role": "VaultDesk Manager"
+  },
+  {
+   "role": "VaultDesk Administrator"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "standard": "Yes",
+ "system_page": 0,
+ "title": "VaultDesk"
+}

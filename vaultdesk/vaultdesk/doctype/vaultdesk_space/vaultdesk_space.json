@@ -1,0 +1,81 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "space_name",
+  "space_type",
+  "description",
+  "owner_user",
+  "root_item",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "fieldname": "space_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Space Name",
+   "reqd": 1
+  },
+  {
+   "default": "Shared",
+   "fieldname": "space_type",
+   "fieldtype": "Select",
+   "label": "Space Type",
+   "options": "Shared\nDepartment\nPersonal",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "owner_user",
+   "fieldtype": "Link",
+   "label": "Business Owner",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "root_item",
+   "fieldtype": "Link",
+   "label": "Root Folder",
+   "options": "VaultDesk Item",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Active",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "module": "VaultDesk",
+ "name": "VaultDesk Space",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "VaultDesk Administrator",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "space_name",
+ "track_changes": 1
+}

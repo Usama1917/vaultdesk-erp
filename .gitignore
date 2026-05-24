@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Virtual environments and local configuration
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+sites/
+site_config.json
+common_site_config.json
+
+# Node and frontend output
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.parcel-cache/
+
+# Frappe/Bench runtime artifacts
+logs/
+*.log
+*.pid
+*.sqlite*
+*.db
+
+# Credentials and key material
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*
+*secret*
+
+# Editors and operating system files
+.DS_Store
+.idea/
+.vscode/
+*.swp

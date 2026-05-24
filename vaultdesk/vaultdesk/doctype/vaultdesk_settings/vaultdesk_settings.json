@@ -1,0 +1,81 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "storage_user",
+  "max_upload_size_mb",
+  "allowed_file_extensions",
+  "previewable_mime_types",
+  "allow_public_sharing",
+  "trash_retention_days",
+  "log_downloads"
+ ],
+ "fields": [
+  {
+   "default": "Administrator",
+   "description": "Native private File records are owned by this controlled user.",
+   "fieldname": "storage_user",
+   "fieldtype": "Link",
+   "label": "Storage User",
+   "options": "User",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "10",
+   "fieldname": "max_upload_size_mb",
+   "fieldtype": "Int",
+   "label": "Maximum Upload Size (MB)",
+   "reqd": 1
+  },
+  {
+   "default": "pdf\njpg\njpeg\npng\nwebp\ngif\ntxt\ncsv\njson",
+   "description": "One lowercase extension per line. Empty disables uploads until an administrator configures an allowlist.",
+   "fieldname": "allowed_file_extensions",
+   "fieldtype": "Small Text",
+   "label": "Allowed File Extensions"
+  },
+  {
+   "default": "application/pdf\nimage/jpeg\nimage/png\nimage/gif\nimage/webp\ntext/plain\ntext/csv\napplication/json\ntext/html\ntext/css\ntext/javascript\napplication/javascript\ntext/x-python",
+   "description": "One safe preview MIME type per line. Text source formats are served only as plain text.",
+   "fieldname": "previewable_mime_types",
+   "fieldtype": "Small Text",
+   "label": "Previewable MIME Types"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_public_sharing",
+   "fieldtype": "Check",
+   "label": "Allow Public Sharing"
+  },
+  {
+   "default": "30",
+   "fieldname": "trash_retention_days",
+   "fieldtype": "Int",
+   "label": "Trash Retention Days",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "log_downloads",
+   "fieldtype": "Check",
+   "label": "Log Downloads"
+  }
+ ],
+ "issingle": 1,
+ "module": "VaultDesk",
+ "name": "VaultDesk Settings",
+ "permissions": [
+  {
+   "read": 1,
+   "role": "VaultDesk Administrator",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ]
+}

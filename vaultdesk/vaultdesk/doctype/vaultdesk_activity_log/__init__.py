@@ -1,0 +1,1 @@
+"""VaultDesk Activity Log DocType."""

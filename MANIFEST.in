@@ -1,0 +1,4 @@
+include README.md
+include license.txt
+recursive-include vaultdesk *.css *.csv *.html *.ico *.js *.json *.md *.png *.py *.svg *.txt
+recursive-include docs *.md

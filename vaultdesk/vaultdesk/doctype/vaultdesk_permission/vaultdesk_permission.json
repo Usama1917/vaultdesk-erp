@@ -1,0 +1,154 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "vaultdesk_item",
+  "principal_type",
+  "user",
+  "role",
+  "principal_key",
+  "permission_section",
+  "can_view",
+  "can_download",
+  "can_upload",
+  "can_edit",
+  "can_move",
+  "can_delete",
+  "can_manage_permissions",
+  "audit_section",
+  "granted_by",
+  "granted_on",
+  "expires_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "vaultdesk_item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "VaultDesk Item",
+   "options": "VaultDesk Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "principal_type",
+   "fieldtype": "Select",
+   "label": "Principal Type",
+   "options": "User\nRole",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.principal_type=='User'",
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "depends_on": "eval:doc.principal_type=='Role'",
+   "fieldname": "role",
+   "fieldtype": "Link",
+   "label": "Role",
+   "options": "Role"
+  },
+  {
+   "fieldname": "principal_key",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Principal Key",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "permission_section",
+   "fieldtype": "Section Break",
+   "label": "Permissions"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_view",
+   "fieldtype": "Check",
+   "label": "Can View"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_download",
+   "fieldtype": "Check",
+   "label": "Can Download"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_upload",
+   "fieldtype": "Check",
+   "label": "Can Upload"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_edit",
+   "fieldtype": "Check",
+   "label": "Can Edit"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_move",
+   "fieldtype": "Check",
+   "label": "Can Move"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_delete",
+   "fieldtype": "Check",
+   "label": "Can Delete"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_manage_permissions",
+   "fieldtype": "Check",
+   "label": "Can Manage Permissions"
+  },
+  {
+   "fieldname": "audit_section",
+   "fieldtype": "Section Break",
+   "label": "Audit"
+  },
+  {
+   "fieldname": "granted_by",
+   "fieldtype": "Link",
+   "label": "Granted By",
+   "options": "User",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "granted_on",
+   "fieldtype": "Datetime",
+   "label": "Granted On",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "expires_on",
+   "fieldtype": "Datetime",
+   "label": "Expires On"
+  }
+ ],
+ "module": "VaultDesk",
+ "name": "VaultDesk Permission",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "role": "VaultDesk Administrator"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "System Manager"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "principal_key",
+ "track_changes": 1
+}

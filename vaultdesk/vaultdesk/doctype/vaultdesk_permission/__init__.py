@@ -1,0 +1,1 @@
+"""VaultDesk Permission DocType."""

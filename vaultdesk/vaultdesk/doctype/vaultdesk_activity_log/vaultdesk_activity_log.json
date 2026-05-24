@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "vaultdesk_item",
+  "space",
+  "action",
+  "actor",
+  "action_on",
+  "source_parent",
+  "target_parent",
+  "affected_principal",
+  "details_json"
+ ],
+ "fields": [
+  {
+   "fieldname": "vaultdesk_item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "VaultDesk Item",
+   "options": "VaultDesk Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "space",
+   "fieldtype": "Link",
+   "label": "VaultDesk Space",
+   "options": "VaultDesk Space",
+   "reqd": 1
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Action",
+   "options": "Created\nUploaded\nViewed\nDownloaded\nPreviewed\nRenamed\nMoved\nTrashed\nRestored\nPermission Added\nPermission Updated\nPermission Removed\nInheritance Changed\nPurged",
+   "reqd": 1
+  },
+  {
+   "fieldname": "actor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Actor",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "action_on",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Action On",
+   "reqd": 1
+  },
+  {
+   "fieldname": "source_parent",
+   "fieldtype": "Link",
+   "label": "Source Parent",
+   "options": "VaultDesk Item"
+  },
+  {
+   "fieldname": "target_parent",
+   "fieldtype": "Link",
+   "label": "Target Parent",
+   "options": "VaultDesk Item"
+  },
+  {
+   "fieldname": "affected_principal",
+   "fieldtype": "Data",
+   "label": "Affected Principal"
+  },
+  {
+   "fieldname": "details_json",
+   "fieldtype": "Code",
+   "label": "Safe Details",
+   "options": "JSON",
+   "read_only": 1
+  }
+ ],
+ "module": "VaultDesk",
+ "name": "VaultDesk Activity Log",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "role": "VaultDesk Administrator"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "System Manager"
+  }
+ ],
+ "sort_field": "action_on",
+ "sort_order": "DESC"
+}

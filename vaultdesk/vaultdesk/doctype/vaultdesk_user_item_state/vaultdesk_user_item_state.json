@@ -1,0 +1,78 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "vaultdesk_item",
+  "is_starred",
+  "last_opened_on",
+  "last_previewed_on",
+  "last_downloaded_on",
+  "open_count"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "vaultdesk_item",
+   "fieldtype": "Link",
+   "label": "VaultDesk Item",
+   "options": "VaultDesk Item",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_starred",
+   "fieldtype": "Check",
+   "label": "Starred"
+  },
+  {
+   "fieldname": "last_opened_on",
+   "fieldtype": "Datetime",
+   "label": "Last Opened On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_previewed_on",
+   "fieldtype": "Datetime",
+   "label": "Last Previewed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_downloaded_on",
+   "fieldtype": "Datetime",
+   "label": "Last Downloaded On",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "open_count",
+   "fieldtype": "Int",
+   "label": "Open Count",
+   "read_only": 1
+  }
+ ],
+ "module": "VaultDesk",
+ "name": "VaultDesk User Item State",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "role": "VaultDesk Administrator"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "System Manager"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

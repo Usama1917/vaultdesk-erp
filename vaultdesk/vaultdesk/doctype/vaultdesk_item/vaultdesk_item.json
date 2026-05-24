@@ -1,0 +1,280 @@
+{
+ "actions": [],
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "display_name",
+  "is_group",
+  "space",
+  "parent_vaultdesk_item",
+  "business_owner",
+  "created_by_user",
+  "break_inheritance",
+  "file_section",
+  "native_file",
+  "original_file_name",
+  "mime_type",
+  "file_extension",
+  "file_size",
+  "storage_backend",
+  "preview_status",
+  "content_hash",
+  "trash_section",
+  "is_trashed",
+  "trash_root",
+  "trashed_on",
+  "trashed_by",
+  "original_parent_vaultdesk_item",
+  "purge_after",
+  "tree_section",
+  "lft",
+  "rgt",
+  "old_parent"
+ ],
+ "fields": [
+  {
+   "fieldname": "display_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Folder",
+   "reqd": 1
+  },
+  {
+   "fieldname": "space",
+   "fieldtype": "Link",
+   "label": "VaultDesk Space",
+   "options": "VaultDesk Space",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "parent_vaultdesk_item",
+   "fieldtype": "Link",
+   "label": "Parent Folder",
+   "options": "VaultDesk Item",
+   "search_index": 1
+  },
+  {
+   "fieldname": "business_owner",
+   "fieldtype": "Link",
+   "label": "Business Owner",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "created_by_user",
+   "fieldtype": "Link",
+   "label": "Created By User",
+   "options": "User",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "Stop inherited grants from parent folders at this item.",
+   "fieldname": "break_inheritance",
+   "fieldtype": "Check",
+   "label": "Break Permission Inheritance",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:!doc.is_group",
+   "fieldname": "file_section",
+   "fieldtype": "Section Break",
+   "label": "File Metadata"
+  },
+  {
+   "depends_on": "eval:!doc.is_group",
+   "fieldname": "native_file",
+   "fieldtype": "Link",
+   "label": "Private Stored File",
+   "options": "File",
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.is_group",
+   "fieldname": "original_file_name",
+   "fieldtype": "Data",
+   "label": "Original File Name",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.is_group",
+   "fieldname": "mime_type",
+   "fieldtype": "Data",
+   "label": "MIME Type",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.is_group",
+   "fieldname": "file_extension",
+   "fieldtype": "Data",
+   "label": "File Extension",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.is_group",
+   "fieldname": "file_size",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "File Size",
+   "read_only": 1
+  },
+  {
+   "default": "Frappe Private File",
+   "depends_on": "eval:!doc.is_group",
+   "fieldname": "storage_backend",
+   "fieldtype": "Select",
+   "label": "Storage Backend",
+   "options": "Frappe Private File",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.is_group",
+   "fieldname": "preview_status",
+   "fieldtype": "Select",
+   "label": "Preview Status",
+   "options": "\nAvailable\nUnsupported\nBlocked",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.is_group",
+   "fieldname": "content_hash",
+   "fieldtype": "Data",
+   "label": "Content Hash",
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "trash_section",
+   "fieldtype": "Section Break",
+   "label": "Trash"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_trashed",
+   "fieldtype": "Check",
+   "label": "Explicitly Trashed",
+   "read_only": 1
+  },
+  {
+   "description": "Root deletion action currently hiding this item.",
+   "fieldname": "trash_root",
+   "fieldtype": "Link",
+   "label": "Trash Root",
+   "options": "VaultDesk Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "trashed_on",
+   "fieldtype": "Datetime",
+   "label": "Trashed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "trashed_by",
+   "fieldtype": "Link",
+   "label": "Trashed By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "original_parent_vaultdesk_item",
+   "fieldtype": "Link",
+   "label": "Original Parent Folder",
+   "options": "VaultDesk Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "purge_after",
+   "fieldtype": "Datetime",
+   "label": "Purge After",
+   "read_only": 1
+  },
+  {
+   "fieldname": "tree_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Tree Internals"
+  },
+  {
+   "fieldname": "lft",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Left",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rgt",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Right",
+   "read_only": 1
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Old Parent",
+   "read_only": 1
+  }
+ ],
+ "is_tree": 1,
+ "module": "VaultDesk",
+ "name": "VaultDesk Item",
+ "nsm_parent_field": "parent_vaultdesk_item",
+ "permissions": [
+  {
+   "read": 1,
+   "report": 1,
+   "role": "VaultDesk User",
+   "select": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "VaultDesk Manager",
+   "select": 1
+  },
+  {
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "VaultDesk Administrator",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "VaultDesk Administrator"
+  },
+  {
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "System Manager"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "display_name",
+ "track_changes": 1
+}

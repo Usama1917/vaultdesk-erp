@@ -1,0 +1,1 @@
+"""VaultDesk Settings DocType."""
