@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>VaultDesk</title>
+		<link rel="icon" href="data:,">
+		<link rel="stylesheet" href="./vaultdesk.css">
+		<style>
+			body { margin: 0; background: #f7f9fc; }
+		</style>
+	</head>
+	<body>
+		<div id="vaultdesk-preview" class="vaultdesk-mount"></div>
+		<script type="module">
+			import { mountVaultDesk } from "./app.js";
+
+			// Local preview only: this entry always uses browser-memory fixtures, never ERP/Frappe APIs.
+			const app = mountVaultDesk(document.querySelector("#vaultdesk-preview"), { apiMode: "mock" });
+			const parameters = new URLSearchParams(window.location.search);
+			if (parameters.has("permissions")) {
+				const openPermissions = () => {
+					const designs = app.state.items.find((item) => item.name === "projects");
+					if (designs) {
+						app.share(designs);
+						return;
+					}
+					window.setTimeout(openPermissions, 100);
+				};
+				openPermissions();
+			}
+			if (parameters.has("preview")) {
+				const fileName = parameters.get("preview") || "config";
+				const openPreview = () => {
+					const item = app.api.items?.[fileName];
+					if (!app.state.loading && app.state.items.length && item) {
+						app.preview(app.api.clone(fileName));
+						return;
+					}
+					window.setTimeout(openPreview, 100);
+				};
+				openPreview();
+			}
+			if (parameters.has("versions")) {
+				const fileName = parameters.get("versions") || "invoice";
+				const openVersions = () => {
+					const item = app.api.items?.[fileName];
+					if (!app.state.loading && item) {
+						app.openVersions(app.api.clone(fileName));
+						return;
+					}
+					window.setTimeout(openVersions, 100);
+				};
+				openVersions();
+			}
+			if (parameters.has("context")) {
+				const targetName = parameters.get("context") || "canvas";
+				const openContext = async () => {
+					if (app.state.loading) {
+						window.setTimeout(openContext, 100);
+						return;
+					}
+					if (["file", "breadcrumb", "readonly"].includes(targetName)) {
+						await app.openFolder(targetName === "readonly" ? "shared" : "production");
+					}
+					const selector = {
+						canvas: '[data-region="drop-surface"]',
+						folder: '[data-region="items"] [data-context-item="projects"]',
+						tree: '[data-region="tree"] [data-context-item="projects"]',
+						breadcrumb: '[data-region="breadcrumbs"] [data-context-item="production"]',
+						file: '[data-region="items"] [data-context-item="notes"]',
+						readonly: '[data-region="items"] [data-context-item="restricted"]',
+					}[targetName];
+					const target = selector && document.querySelector(selector);
+					if (target) {
+						target.dispatchEvent(new MouseEvent("contextmenu", {
+							bubbles: true,
+							cancelable: true,
+							clientX: 260,
+							clientY: 230,
+						}));
+					}
+				};
+				openContext();
+			}
+		</script>
+	</body>
+</html>

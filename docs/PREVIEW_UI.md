@@ -88,8 +88,9 @@ Serve `vaultdesk/public/vaultdesk/` and use:
 
 | URL | Demonstrates |
 | --- | --- |
-| `demo.html?preview=config` | JSON source rendered as escaped text |
-| `demo.html?preview=proposal` | PDF viewer |
-| `demo.html?preview=bundle` | Unsupported ZIP fallback |
-| `demo.html?preview=restricted` | Visible metadata with denied content |
-| `demo.html?preview=broken` | Retryable protected-content failure |
+| `?preview=config` | JSON source rendered as escaped text |
+| `?preview=proposal` | PDF viewer |
+| `?preview=bundle` | Unsupported ZIP fallback |
+| `?preview=restricted` | Visible metadata with denied content |
+| `?preview=broken` | Retryable protected-content failure |
+| `?preview=config&lang=ar` | Arabic/RTL viewer around a source document preview |

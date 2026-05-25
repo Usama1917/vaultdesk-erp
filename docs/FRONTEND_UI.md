@@ -11,6 +11,14 @@ modern business-style file manager with:
 - Protected image, PDF and escaped-source-text preview, with navigation,
   details and download fallback.
 - Drag-and-drop upload, rename, move, trash/restore and sharing dialogs.
+- Local-preview version history with upload, restore, protected-revision and
+  explicit manual delete flows.
+- Permission-aware right-click menus on empty space, items, folder tree nodes
+  and breadcrumbs.
+- English/LTR and Arabic/RTL rendering driven through a centralized
+  translation dictionary and language-aware layout.
+- CSS-driven micro-interactions for navigation, cards, view changes, menus,
+  dialogs, details, drag/drop and version updates, with reduced-motion support.
 - Loading skeletons, empty views, recoverable error views and toast feedback.
 - Permission-aware controls driven by each item's backend `capabilities`.
 
@@ -29,12 +37,15 @@ vaultdesk/
     app.js                 UI state controller and event orchestration
     api.js                 Live Frappe API adapter
     mock_api.js            In-memory test adapter and sample data
+    i18n.js                English/Arabic dictionaries and language resolution
     utils.js               Formatting, icons and permission helpers
     vaultdesk.css         Responsive visual system
-    demo.html              Asset-only mock demonstration entry
+    index.html             Standalone local-preview mock entry
+    demo.html              Compatibility redirect to index.html
     components/
       layout.js            Shell, toolbar, sidebar and content regions
       content.js           Cards, table, states, details, preview and dialogs
+      versions.js          Local-preview version history modal and delete confirmation
 ```
 
 No ERPNext core files are edited. Frappe discovers the standard Page from this
@@ -46,10 +57,52 @@ The installed Desk Page at `/app/vaultdesk` always uses protected live
 VaultDesk APIs. It cannot silently present browser-only demo content to ERP
 users.
 
-Mock mode is confined to `public/vaultdesk/demo.html` for isolated UI work. It
+Mock mode is confined to `public/vaultdesk/index.html` for isolated UI work. It
 exercises folders, uploads, drag/drop, grid/list, search, previews, favorites,
-trash/restore and sharing entirely in the browser; mock uploads disappear
-after reload.
+trash/restore, sharing, context menus and permanent-in-session version history
+entirely in the browser; mock changes disappear after reload.
+
+Version actions are exposed only when an adapter implements the preview
+version API. The live adapter currently does not implement version endpoints,
+so this design can be evaluated without implying backend storage behavior.
+The intended live policy is that revisions have no automatic cleanup or
+expiry: only an authorized confirmed manual deletion of an unlocked,
+non-current version may remove one.
+
+## Language And Direction
+
+All interface copy is referenced through translation keys in `i18n.js`.
+English uses `dir="ltr"`; Arabic uses `dir="rtl"`, with mirrored sidebar and
+details borders, navigation arrows, menu placement and responsive detail
+drawer positioning.
+
+In the standalone preview, choose a language from the header control or use:
+
+```text
+http://localhost:3000/?lang=en
+http://localhost:3000/?lang=ar
+```
+
+For the installed Desk page, the UI reads the available current-session
+Frappe language value at mount time. Server-returned document names, user
+names, uploaded document contents and backend exception bodies are business
+data rather than translated UI copy; the server must return localized
+exceptions when live Arabic sessions are enabled.
+
+## Motion And Accessibility
+
+The local preview uses only CSS transitions and compact state classes from
+`app.js`; it does not load an animation framework. Page entry, folder/section
+loads, grid/list changes, item hover/selection, context menus, modal open and
+close, toast feedback, drag/drop and the details panel use short transforms
+and opacity transitions. Version restore is confirmed before it becomes
+current, while mock version uploads display a small progress state and newly
+current versions receive a brief success emphasis.
+
+RTL mode reverses inline slide offsets and responsive panel direction. Under
+`prefers-reduced-motion: reduce`, decorative transitions and looping shimmer
+or progress animation are collapsed to near-instant updates while controls
+and status content remain available.
 
 ## Live Endpoint Mapping
 
@@ -71,6 +124,9 @@ documented in `PERMISSIONS_UI.md`.
 
 The protected preview viewer, type detection and standalone test routes are
 documented in `PREVIEW_UI.md`.
+
+The version preservation and context-menu design is documented in
+`VERSION_HISTORY_UI.md`.
 
 ### Required Backend Extensions Before Full Live Launch
 
@@ -105,7 +161,8 @@ cd vaultdesk/public/vaultdesk
 python3 -m http.server 8090
 ```
 
-Then open `http://localhost:8090/demo.html`.
+Then open `http://localhost:8090/`. The former `demo.html` address remains an
+alias for bookmarks and preview links.
 
 ## Security And UX Notes
 

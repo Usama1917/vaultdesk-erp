@@ -3,41 +3,15 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>VaultDesk UI Demo</title>
-		<link rel="stylesheet" href="./vaultdesk.css">
-		<style>
-			body { margin: 0; background: #f7f9fc; }
-		</style>
+		<title>VaultDesk</title>
+		<link rel="icon" href="data:,">
 	</head>
 	<body>
-		<div id="vaultdesk-demo" class="vaultdesk-mount"></div>
-		<script type="module">
-			import { mountVaultDesk } from "./app.js";
-			const app = mountVaultDesk(document.querySelector("#vaultdesk-demo"), { apiMode: "mock" });
-			const parameters = new URLSearchParams(window.location.search);
-			if (parameters.has("permissions")) {
-				const openPermissions = () => {
-					const projects = app.state.items.find((item) => item.name === "projects");
-					if (projects) {
-						app.share(projects);
-						return;
-					}
-					window.setTimeout(openPermissions, 100);
-				};
-				openPermissions();
-			}
-			if (parameters.has("preview")) {
-				const fileName = parameters.get("preview") || "config";
-				const openPreview = () => {
-					const item = app.api.items?.[fileName];
-					if (!app.state.loading && app.state.items.length && item) {
-						app.preview(app.api.clone(fileName));
-						return;
-					}
-					window.setTimeout(openPreview, 100);
-				};
-				openPreview();
-			}
+		<script>
+			const preview = new URL("./", window.location.href);
+			preview.search = window.location.search;
+			preview.hash = window.location.hash;
+			window.location.replace(preview);
 		</script>
 	</body>
 </html>

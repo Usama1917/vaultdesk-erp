@@ -1,6 +1,7 @@
 export class LiveVaultDeskApi {
-	constructor() {
+	constructor(i18n) {
 		this.mode = "live";
+		this.t = i18n.t;
 	}
 
 	async getSpaces() {
@@ -31,7 +32,7 @@ export class LiveVaultDeskApi {
 			return this.call("vaultdesk.api.files.get_starred_items");
 		}
 		throw new Error(
-			`The ${section} aggregate endpoint is not implemented on the backend yet. Use mock mode while designing it.`
+			this.t("api.aggregate_missing", { section: this.t(`section.${section}`) })
 		);
 	}
 
@@ -62,7 +63,7 @@ export class LiveVaultDeskApi {
 				body,
 			});
 			const json = await response.json();
-			if (!response.ok || json.exc) throw new Error(json.message || "Upload failed.");
+			if (!response.ok || json.exc) throw new Error(json.message || this.t("api.upload_failed"));
 			created.push(json.message);
 		}
 		return created;
@@ -146,7 +147,7 @@ export class LiveVaultDeskApi {
 	async loadPreviewContent(item, kind) {
 		const response = await fetch(this.previewContentUrl(item), { credentials: "same-origin" });
 		if (!response.ok) {
-			let message = "Unable to load this protected preview.";
+			let message = this.t("api.preview_failed");
 			try {
 				const payload = await response.json();
 				message = payload.message || message;
@@ -176,7 +177,7 @@ export class LiveVaultDeskApi {
 
 	async call(method, args = {}, isPost = false) {
 		if (!window.frappe || typeof frappe.call !== "function") {
-			throw new Error("Frappe is unavailable. Open the VaultDesk demo to use mock API mode.");
+			throw new Error(this.t("api.frappe_unavailable"));
 		}
 		const response = await frappe.call({ method, args, type: isPost ? "POST" : "GET" });
 		return response.message;

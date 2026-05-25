@@ -225,6 +225,10 @@ Internal application code must not return results from unrestricted
   purge or public-link sharing API.
 - Preview is not document conversion; unsupported content shows metadata and
   remains download-only for users with download access.
+- Version history is currently represented only in the isolated local preview.
+  Future live version endpoints must preserve every historical revision unless
+  an authorized user confirms manual deletion of an unlocked, non-current
+  version; automatic revision cleanup and expiry are outside the product policy.
 
 ## Integration Sequence
 

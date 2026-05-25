@@ -106,6 +106,6 @@ public/vaultdesk/
 ## Isolated Demo
 
 Serve `vaultdesk/public/vaultdesk/` over HTTP and open
-`demo.html?permissions=1` to review the permissions dialog immediately using
+`?permissions=1` to review the permissions dialog immediately using
 mock users, roles, direct grants and inherited grants. Without the query
 parameter the standalone VaultDesk page opens normally.

@@ -20,9 +20,9 @@ export function formatBytes(bytes) {
 	return `${(value / (1024 ** unit)).toFixed(unit ? 1 : 0)} ${units[unit]}`;
 }
 
-export function formatDate(value) {
+export function formatDate(value, language = "en") {
 	if (!value) return "-";
-	return new Intl.DateTimeFormat(undefined, {
+	return new Intl.DateTimeFormat(language === "ar" ? "ar-EG" : "en", {
 		month: "short",
 		day: "numeric",
 		year: "numeric",
@@ -105,9 +105,14 @@ export function icon(name, classes = "") {
 		download: '<path d="M12 4v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/>',
 		edit: '<path d="m4 20 4.5-1 10-10-3.5-3.5-10 10z"/><path d="m13.5 6.5 3.5 3.5"/>',
 		move: '<path d="M12 3v18M3 12h18"/><path d="m8 7 4-4 4 4M8 17l4 4 4-4M7 8l-4 4 4 4M17 8l4 4-4 4"/>',
+		copy: '<path d="M8 8h12v12H8z"/><path d="M4 16V4h12"/>',
 		info: '<circle cx="12" cy="12" r="9"/><path d="M12 10v7"/><circle cx="12" cy="7" r="1"/>',
 		share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 13.5 6 3.5M9 10.5l6-3.5"/>',
 		warning: '<path d="M12 3 2.5 20h19z"/><path d="M12 9v5"/><circle cx="12" cy="17" r="1"/>',
+		history: '<path d="M12 7v5l4 2"/><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v5h5"/>',
+		refresh: '<path d="M20 11a8 8 0 0 0-14-5"/><path d="M4 4v6h6"/><path d="M4 13a8 8 0 0 0 14 5"/><path d="M20 20v-6h-6"/>',
+		lock: '<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+		unlock: '<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M16 10V7a4 4 0 0 0-7.5-2"/>',
 	};
 	return `<svg class="data-icon ${classes}" viewBox="0 0 24 24" aria-hidden="true">${icons[name] || icons.file}</svg>`;
 }

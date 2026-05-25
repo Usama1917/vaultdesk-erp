@@ -11,6 +11,10 @@ storage inside the ERP environment.
 - Private file upload, protected download and preview for images, PDFs and
   safe text formats.
 - Grid/list views, recent items, starred items, search and item details.
+- Business-safe version history preview with explicit restore and manual deletion flows.
+- Permission-aware right-click menus for workspace, file and folder actions.
+- English and Arabic interface support with automatic LTR/RTL presentation.
+- Lightweight interface motion with reduced-motion support for accessible preview testing.
 - User- and role-based capabilities for view, download, upload, edit, move,
   delete and permission administration.
 - Permission inheritance boundaries for restricted folders.
@@ -36,6 +40,97 @@ folder records:
 - `VaultDesk Activity Log`: immutable usage/security audit trail.
 - `VaultDesk Settings`: storage, preview, retention and upload policy.
 
+## Standalone Local Preview
+
+The browser preview is deliberately isolated from Frappe and ERPNext. Its
+entry point is `vaultdesk/public/vaultdesk/index.html`, which always selects
+the in-memory adapter in `mock_api.js`. The Desk page continues to select the
+live adapter in `api.js`; running the preview does not install an app, migrate
+a site or connect to an ERP database.
+
+### Requirements
+
+- Python 3.10 or newer, already required by this repository.
+- A modern browser supporting JavaScript modules.
+
+### Install
+
+There are no frontend packages to install for the local preview. From a clone
+of this repository, start the included static assets directly:
+
+```bash
+cd /path/to/VaultDesk
+python3 -m http.server 3000 --directory vaultdesk/public/vaultdesk
+```
+
+Open:
+
+```text
+http://localhost:3000/
+```
+
+No environment variables are required. Stop the preview server with
+`Ctrl+C`.
+
+### Mock Preview Coverage
+
+The preview provides a browser-only document library with Books, Designs,
+PDFs, Images, Invoices, Production Files and Shared Documents. It supports
+folder navigation, breadcrumbs, search, grid/list views, details, image/PDF/
+text preview, upload, new-folder, rename, move, trash/restore, favorites and
+permission management flows. It also models permanent file-version history,
+manual version deletion, protected versions and right-click menus. Loading
+delays, empty folders, restricted files and a failed-preview fixture make
+states easy to inspect. The preview also includes lightweight page, card,
+menu, modal, details-panel, toast and view-switching motion using native CSS.
+When the browser requests reduced motion, non-essential movement and looping
+loading effects are reduced to near-instant state changes.
+
+The preview header includes a mock user-language selector for `English / LTR`
+and `العربية / RTL`. It preserves the selected mock language in the browser.
+You can also open Arabic directly:
+
+```text
+http://localhost:3000/?lang=ar
+```
+
+The Desk frontend initializes its language from the current Frappe session
+language when available (`frappe.boot.lang`, `frappe.boot.user.language` or
+`frappe.lang`). The local selector is not shown in live mode.
+
+Version history in the preview follows business-document preservation rules:
+each upload becomes the current version while every earlier revision remains
+available; restoring an earlier revision makes it current without removing the
+previous current revision. There is no automatic cleanup or expiry for
+versions. A non-current version can be removed only through an authorized,
+confirmed manual delete action. Protected versions must be unlocked by an
+administrator before manual deletion, and the current version cannot be
+deleted.
+
+Right-click the content canvas, a file/folder card, a folder in the sidebar or
+a breadcrumb to access contextual actions. Available entries are derived from
+the item permissions; unavailable actions appear disabled.
+
+Useful direct preview routes:
+
+```text
+http://localhost:3000/?permissions
+http://localhost:3000/?preview=config
+http://localhost:3000/?preview=proposal
+http://localhost:3000/?preview=restricted
+http://localhost:3000/?preview=broken
+http://localhost:3000/?versions=invoice
+http://localhost:3000/?context=canvas
+http://localhost:3000/?context=file
+http://localhost:3000/?versions=invoice&lang=ar
+http://localhost:3000/?context=file&lang=ar
+```
+
+All mutations, uploaded files, version changes and changed permissions exist
+only in browser memory and reset on refresh. Downloads are generated demo
+content; no actual Frappe user session, persistence, private storage, server
+authorization or audit logging is exercised in this mode.
+
 ## Development Setup
 
 Use a development Bench site, never a production site, while installing or
@@ -53,8 +148,8 @@ bench build --app vaultdesk
 Assign `VaultDesk User`, `VaultDesk Manager`, `VaultDesk Administrator` or
 `System Manager` as appropriate, then open `/app/vaultdesk`.
 
-For frontend-only design work, serve `vaultdesk/public/vaultdesk/demo.html`;
-the installed Desk page always uses live protected APIs and never mock storage.
+For frontend-only design work, use the standalone local preview above; the
+installed Desk page always uses live protected APIs and never mock storage.
 
 ## ERPNext Integration
 
@@ -88,8 +183,10 @@ still requires the controls and automated tests listed below.
 - Streamed/resumable uploads or strict upstream body limits, malware scanning,
   storage quotas and endpoint rate limiting.
 - Secure live endpoints for `Shared with me` and global `Trash` sections.
-- Scheduled purge/retention processing and backup/restore validation including
-  private file binaries.
+- A live version-history API/storage model that permanently retains revisions
+  unless an authorized user confirms a permitted manual deletion.
+- Scheduled trash purge processing and backup/restore validation including
+  private file binaries and historical versions.
 - Frappe integration tests for ACL inheritance, URL guessing, large uploads,
   concurrent tree mutations and REST permission behavior.
 

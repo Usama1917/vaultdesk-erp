@@ -4,29 +4,19 @@ import { renderModal } from "./content.js";
 export const PERMISSION_LEVELS = [
 	{
 		value: "view",
-		label: "View only",
-		description: "View, preview and download.",
 	},
 	{
 		value: "upload",
-		label: "Upload",
-		description: "View and add files to a folder.",
 		folderOnly: true,
 	},
 	{
 		value: "edit",
-		label: "Edit",
-		description: "View, rename and move.",
 	},
 	{
 		value: "delete",
-		label: "Delete",
-		description: "Edit and move items to trash.",
 	},
 	{
 		value: "manage",
-		label: "Manage permissions",
-		description: "Full access including sharing.",
 	},
 ];
 
@@ -60,81 +50,85 @@ export function levelForCapabilities(capabilities, isFolder) {
 	return matching ? matching.value : "custom";
 }
 
-export function renderPermissionDialog(item, overview, dialogState) {
+export function renderPermissionDialog(item, overview, dialogState, i18n) {
+	const t = i18n.t;
 	const direct = overview.direct_grants || [];
 	const inherited = overview.inherited_grants || [];
 	const body = `
 		<div class="permission-owner">
 			<div class="permission-avatar">${escapeHtml(ownerInitials(overview.item.business_owner))}</div>
 			<div>
-				<p class="permission-caption">Owner</p>
-				<strong>${escapeHtml(overview.item.business_owner || "No owner assigned")}</strong>
+				<p class="permission-caption">${t("permissions.owner")}</p>
+				<strong>${escapeHtml(overview.item.business_owner || t("permissions.no_owner"))}</strong>
 			</div>
-			<span class="permission-access-badge">Owner</span>
+			<span class="permission-access-badge">${t("permissions.owner")}</span>
 		</div>
-		${overview.can_manage_permissions ? renderAddAccess(item, dialogState) : ""}
+		${overview.can_manage_permissions ? renderAddAccess(item, dialogState, i18n) : ""}
 		<section class="permission-section">
-			<h3>Direct access <span>${direct.length}</span></h3>
+			<h3>${t("permissions.direct_access")} <span>${direct.length}</span></h3>
 			${direct.length
-		? direct.map((grant) => renderGrant(item, grant, dialogState, true)).join("")
-		: '<p class="permission-empty">No direct permissions. Access is currently inherited.</p>'}
+		? direct.map((grant) => renderGrant(item, grant, dialogState, true, i18n)).join("")
+		: `<p class="permission-empty">${t("permissions.direct_empty")}</p>`}
 		</section>
 		<section class="permission-section is-inherited">
-			<h3>Inherited access <span>${inherited.length}</span></h3>
+			<h3>${t("permissions.inherited_access")} <span>${inherited.length}</span></h3>
 			<p class="permission-note">
-				Inherited permissions come from parent folders and cannot be edited here.
+				${t("permissions.inherited_note")}
 			</p>
 			${inherited.length
-		? inherited.map((grant) => renderGrant(item, grant, dialogState, false)).join("")
-		: '<p class="permission-empty">No permissions inherited from a parent folder.</p>'}
+		? inherited.map((grant) => renderGrant(item, grant, dialogState, false, i18n)).join("")
+		: `<p class="permission-empty">${t("permissions.inherited_empty")}</p>`}
 		</section>
 	`;
 	return renderModal(
-		`Manage access: ${item.display_name}`,
+		t("permissions.title", { name: item.display_name }),
 		body,
-		'<button class="data-btn data-btn-secondary" data-action="close-modal">Done</button>',
-		"data-permission-modal"
+		`<button class="data-btn data-btn-secondary" data-action="close-modal">${t("action.done")}</button>`,
+		"data-permission-modal",
+		i18n
 	);
 }
 
-function renderAddAccess(item, state) {
+function renderAddAccess(item, state, i18n) {
+	const t = i18n.t;
 	const isUser = state.principalType === "User";
 	return `
 		<section class="permission-add">
-			<h3>Add access</h3>
-			<div class="permission-type-switch" role="tablist" aria-label="Principal type">
-				<button class="${isUser ? "is-active" : ""}" data-action="permission-type" data-type="User">Users</button>
-				<button class="${!isUser ? "is-active" : ""}" data-action="permission-type" data-type="Role">Roles</button>
+			<h3>${t("permissions.add_access")}</h3>
+			<div class="permission-type-switch" role="tablist" aria-label="${t("permissions.principal_type")}">
+				<button class="${isUser ? "is-active" : ""}" data-action="permission-type" data-type="User">${t("permissions.users")}</button>
+				<button class="${!isUser ? "is-active" : ""}" data-action="permission-type" data-type="Role">${t("permissions.roles")}</button>
 			</div>
 			<div class="permission-add-row">
 				<label class="permission-search">
 					${icon("search")}
 					<input data-role="principal-search" value="${attribute(state.query)}"
-						placeholder="Search ERP ${isUser ? "users" : "roles"}" autocomplete="off">
+						placeholder="${t(isUser ? "permissions.search_users" : "permissions.search_roles")}" autocomplete="off">
 				</label>
-				<select class="permission-level" data-role="new-permission-level" aria-label="Permission level">
-					${levelOptions(item, state.newLevel)}
+				<select class="permission-level" data-role="new-permission-level" aria-label="${t("permissions.level")}">
+					${levelOptions(item, state.newLevel, false, i18n)}
 				</select>
 				<button class="data-btn data-btn-primary" data-action="confirm-permission-add"
-					${state.selectedPrincipal ? "" : "disabled"}>Add</button>
+					${state.selectedPrincipal ? "" : "disabled"}>${t("action.add")}</button>
 			</div>
-			${renderPrincipalResults(state)}
+			${renderPrincipalResults(state, i18n)}
 			${state.selectedPrincipal ? `
 				<div class="permission-selection">
 					${icon(isUser ? "shared" : "folder")}
 					<span>${escapeHtml(state.selectedPrincipal.label)}</span>
-					<button data-action="clear-principal" aria-label="Clear selection">${icon("close")}</button>
+					<button data-action="clear-principal" aria-label="${t("permissions.clear_selection")}">${icon("close")}</button>
 				</div>` : ""}
 		</section>
 	`;
 }
 
-function renderPrincipalResults(state) {
+function renderPrincipalResults(state, i18n) {
+	const t = i18n.t;
 	if (state.searching) {
-		return '<div class="permission-results"><p>Searching...</p></div>';
+		return `<div class="permission-results"><p>${t("permissions.searching")}</p></div>`;
 	}
 	if (state.query.length >= 2 && !state.results.length && !state.selectedPrincipal) {
-		return '<div class="permission-results"><p>No matching ERP principal found.</p></div>';
+		return `<div class="permission-results"><p>${t("permissions.no_match")}</p></div>`;
 	}
 	if (!state.results.length || state.selectedPrincipal) return "";
 	return `
@@ -151,7 +145,8 @@ function renderPrincipalResults(state) {
 	`;
 }
 
-function renderGrant(item, grant, state, editable) {
+function renderGrant(item, grant, state, editable, i18n) {
+	const t = i18n.t;
 	const principal = grant.user || grant.role;
 	const level = state.levels[grant.name] || levelForCapabilities(grant.capabilities, item.type === "folder");
 	const confirming = state.confirmRemove === grant.name;
@@ -162,35 +157,37 @@ function renderGrant(item, grant, state, editable) {
 				<div>
 					<strong>${escapeHtml(principal)}</strong>
 					<small>
-						${escapeHtml(grant.principal_type)}
+						${t(`principal.${grant.principal_type.toLowerCase()}`)}
 						<span class="permission-scope ${editable ? "" : "is-inherited"}">
-							${editable ? "Direct" : `Inherited from ${escapeHtml(grant.source_item?.display_name || "parent folder")}`}
+							${editable
+		? t("permissions.direct")
+		: t("permissions.inherited_from", { name: escapeHtml(grant.source_item?.display_name || t("permissions.parent_folder")) })}
 						</span>
 					</small>
 				</div>
 			</div>
 			<div class="permission-grant-actions">
 				<select data-role="grant-level" data-id="${attribute(grant.name)}"
-					${editable ? "" : "disabled"} aria-label="Access for ${attribute(principal)}">
-					${levelOptions(item, level, level === "custom")}
+					${editable ? "" : "disabled"} aria-label="${attribute(t("permissions.access_for", { name: principal }))}">
+					${levelOptions(item, level, level === "custom", i18n)}
 				</select>
 				${editable ? (confirming
-		? `<button class="permission-link is-danger" data-action="confirm-remove-permission" data-id="${attribute(grant.name)}">Confirm</button>
-		   <button class="permission-link" data-action="cancel-remove-permission">Cancel</button>`
-		: `<button class="data-icon-btn permission-remove" data-action="remove-permission" data-id="${attribute(grant.name)}" aria-label="Remove access">${icon("trash")}</button>`)
+		? `<button class="permission-link is-danger" data-action="confirm-remove-permission" data-id="${attribute(grant.name)}">${t("action.confirm")}</button>
+		   <button class="permission-link" data-action="cancel-remove-permission">${t("action.cancel")}</button>`
+		: `<button class="data-icon-btn permission-remove" data-action="remove-permission" data-id="${attribute(grant.name)}" aria-label="${t("permissions.remove")}">${icon("trash")}</button>`)
 		: ""}
 			</div>
 		</div>
 	`;
 }
 
-function levelOptions(item, selected, allowCustom = false) {
-	const custom = allowCustom ? '<option value="custom" selected disabled>Custom access</option>' : "";
+function levelOptions(item, selected, allowCustom = false, i18n) {
+	const custom = allowCustom ? `<option value="custom" selected disabled>${i18n.t("permissions.level_custom")}</option>` : "";
 	return custom + PERMISSION_LEVELS
 		.filter((level) => !level.folderOnly || item.type === "folder")
 		.map((level) => `
 			<option value="${level.value}" ${level.value === selected ? "selected" : ""}>
-				${escapeHtml(level.label)}
+				${escapeHtml(i18n.t(`permissions.level_${level.value}`))}
 			</option>
 		`).join("");
 }
