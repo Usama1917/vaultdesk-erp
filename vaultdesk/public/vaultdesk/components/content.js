@@ -105,7 +105,7 @@ function renderList(items, state, i18n, motionClass) {
 								<button class="data-table-name" data-action="${item.type === "folder" ? "open-folder" : "preview"}"
 									data-id="${attribute(item.name)}">
 									<span class="data-file-icon is-${itemIcon(item)}">${icon(itemIcon(item))}</span>
-									${escapeHtml(item.display_name)}
+									<span class="data-item-label">${escapeHtml(item.display_name)}</span>
 								</button>
 							</td>
 							<td>${escapeHtml(item.type === "folder" ? t("item.folder") : item.file_extension?.toUpperCase() || t("item.file"))}</td>

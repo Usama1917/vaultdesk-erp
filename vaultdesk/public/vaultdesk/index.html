@@ -1,65 +1,90 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="vaultdesk-preview-document">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>VaultDesk</title>
 		<link rel="icon" href="data:,">
-		<link rel="stylesheet" href="./vaultdesk.css">
-		<style>
-			body { margin: 0; background: #f7f9fc; }
-		</style>
+		<link rel="stylesheet" href="./vaultdesk.css?v=responsive-startup-20260525">
 	</head>
-	<body>
-		<div id="vaultdesk-preview" class="vaultdesk-mount"></div>
+	<body class="vaultdesk-preview-body">
+		<div id="vaultdesk-preview" class="vaultdesk-mount vaultdesk-standalone" aria-live="polite"></div>
 		<script type="module">
-			import { mountVaultDesk } from "./app.js";
-
-			// Local preview only: this entry always uses browser-memory fixtures, never ERP/Frappe APIs.
-			const app = mountVaultDesk(document.querySelector("#vaultdesk-preview"), { apiMode: "mock" });
+			const mount = document.querySelector("#vaultdesk-preview");
 			const parameters = new URLSearchParams(window.location.search);
-			if (parameters.has("permissions")) {
-				const openPermissions = () => {
+			const language = (() => {
+				try {
+					return parameters.get("lang") === "ar" || window.localStorage.getItem("vaultdesk-language") === "ar"
+						? "ar"
+						: "en";
+				} catch (error) {
+					return parameters.get("lang") === "ar" ? "ar" : "en";
+				}
+			})();
+			const startupText = language === "ar" ? {
+				loading: "جار تحميل المعاينة المحلية...",
+				title: "تعذر تشغيل VaultDesk",
+				message: "أعد تحميل الصفحة للحصول على أحدث ملفات المعاينة المحلية.",
+				reload: "إعادة تحميل المعاينة",
+			} : {
+				loading: "Loading local preview...",
+				title: "VaultDesk could not start",
+				message: "Reload the page to retrieve the latest local preview files.",
+				reload: "Reload preview",
+			};
+
+			document.documentElement.lang = language;
+			document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+			mount.innerHTML = `
+				<div class="data-startup" role="status">
+					<span class="data-spinner" aria-hidden="true"></span>
+					<strong>VaultDesk</strong>
+					<p></p>
+				</div>`;
+			mount.querySelector(".data-startup p").textContent = startupText.loading;
+
+			// This bootstrap copy stays independent of app modules so import failures remain visible.
+			function showStartupFailure(error) {
+				console.error("[VaultDesk preview] Startup failed.", error);
+				const state = document.createElement("div");
+				state.className = "data-startup is-error";
+				state.setAttribute("role", "alert");
+				const title = document.createElement("strong");
+				const message = document.createElement("p");
+				const reload = document.createElement("button");
+				title.textContent = startupText.title;
+				message.textContent = startupText.message;
+				reload.className = "data-btn data-btn-primary";
+				reload.type = "button";
+				reload.textContent = startupText.reload;
+				reload.addEventListener("click", () => window.location.reload());
+				state.append(title, message, reload);
+				mount.replaceChildren(state);
+			}
+
+			async function startPreview() {
+				const module = await import("./app.js?v=responsive-startup-20260525");
+
+				// Local preview only: this entry always uses browser-memory fixtures, never ERP/Frappe APIs.
+				const app = module.mountVaultDesk(mount, { apiMode: "mock" });
+				if (await app.ready === false) return;
+
+				if (parameters.has("permissions")) {
 					const designs = app.state.items.find((item) => item.name === "projects");
-					if (designs) {
-						app.share(designs);
-						return;
-					}
-					window.setTimeout(openPermissions, 100);
-				};
-				openPermissions();
-			}
-			if (parameters.has("preview")) {
-				const fileName = parameters.get("preview") || "config";
-				const openPreview = () => {
+					if (designs) app.share(designs);
+				}
+				if (parameters.has("preview")) {
+					const fileName = parameters.get("preview") || "config";
 					const item = app.api.items?.[fileName];
-					if (!app.state.loading && app.state.items.length && item) {
-						app.preview(app.api.clone(fileName));
-						return;
-					}
-					window.setTimeout(openPreview, 100);
-				};
-				openPreview();
-			}
-			if (parameters.has("versions")) {
-				const fileName = parameters.get("versions") || "invoice";
-				const openVersions = () => {
+					if (item) app.preview(app.api.clone(fileName));
+				}
+				if (parameters.has("versions")) {
+					const fileName = parameters.get("versions") || "invoice";
 					const item = app.api.items?.[fileName];
-					if (!app.state.loading && item) {
-						app.openVersions(app.api.clone(fileName));
-						return;
-					}
-					window.setTimeout(openVersions, 100);
-				};
-				openVersions();
-			}
-			if (parameters.has("context")) {
-				const targetName = parameters.get("context") || "canvas";
-				const openContext = async () => {
-					if (app.state.loading) {
-						window.setTimeout(openContext, 100);
-						return;
-					}
+					if (item) app.openVersions(app.api.clone(fileName));
+				}
+				if (parameters.has("context")) {
+					const targetName = parameters.get("context") || "canvas";
 					if (["file", "breadcrumb", "readonly"].includes(targetName)) {
 						await app.openFolder(targetName === "readonly" ? "shared" : "production");
 					}
@@ -80,9 +105,10 @@
 							clientY: 230,
 						}));
 					}
-				};
-				openContext();
+				}
 			}
+
+			startPreview().catch(showStartupFailure);
 		</script>
 	</body>
 </html>

@@ -28,7 +28,10 @@ import { debounce, hasCapability, icon } from "./utils.js";
 
 export function mountVaultDesk(element, options = {}) {
 	const app = new VaultDeskApp(element, options);
-	app.initialize();
+	app.ready = app.initialize().then(() => true).catch((error) => {
+		app.renderStartupFailure(error);
+		return false;
+	});
 	return app;
 }
 
@@ -81,6 +84,24 @@ class VaultDeskApp {
 		this.bindEvents();
 		this.syncViewControls();
 		await this.loadRoot();
+	}
+
+	renderStartupFailure(error) {
+		console.error("[VaultDesk] Initialization failed.", error);
+		const state = document.createElement("div");
+		state.className = "data-startup is-error";
+		state.setAttribute("role", "alert");
+		const title = document.createElement("strong");
+		const message = document.createElement("p");
+		const reload = document.createElement("button");
+		title.textContent = this.i18n.t("startup.error_title");
+		message.textContent = this.i18n.t("startup.error_message");
+		reload.className = "data-btn data-btn-primary";
+		reload.type = "button";
+		reload.textContent = this.i18n.t("startup.reload");
+		reload.addEventListener("click", () => window.location.reload());
+		state.append(title, message, reload);
+		this.element.replaceChildren(state);
 	}
 
 	async refresh() {
@@ -1020,10 +1041,11 @@ class VaultDeskApp {
 		this.regions.contextMenu.innerHTML = renderContextMenu(entries, this.i18n);
 		const menu = this.regions.contextMenu.firstElementChild;
 		if (!menu) return;
-		const maxLeft = window.innerWidth - 248;
-		const maxTop = window.innerHeight - Math.min(menu.offsetHeight || 430, 430) - 8;
-		menu.style.left = `${Math.max(8, Math.min(left, maxLeft))}px`;
-		menu.style.top = `${Math.max(8, Math.min(top, maxTop))}px`;
+		const margin = 8;
+		const maxLeft = Math.max(margin, window.innerWidth - menu.offsetWidth - margin);
+		const maxTop = Math.max(margin, window.innerHeight - menu.offsetHeight - margin);
+		menu.style.left = `${Math.max(margin, Math.min(left, maxLeft))}px`;
+		menu.style.top = `${Math.max(margin, Math.min(top, maxTop))}px`;
 	}
 
 	markContextTarget(target) {

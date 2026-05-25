@@ -72,6 +72,11 @@ http://localhost:3000/
 No environment variables are required. Stop the preview server with
 `Ctrl+C`.
 
+The standalone entry displays a loading state while modules initialize and a
+visible reload prompt if a local asset cannot be loaded. After frontend
+changes, if Chrome still displays an older preview, open DevTools and choose
+**Empty Cache and Hard Reload** from the reload-button menu.
+
 ### Mock Preview Coverage
 
 The preview provides a browser-only document library with Books, Designs,
@@ -85,6 +90,10 @@ states easy to inspect. The preview also includes lightweight page, card,
 menu, modal, details-panel, toast and view-switching motion using native CSS.
 When the browser requests reduced motion, non-essential movement and looping
 loading effects are reduced to near-instant state changes.
+
+The standalone page is sized to the browser viewport and keeps its own content
+scrolling inside the app shell. On smaller desktop and laptop widths, the
+details panel opens over the file area instead of widening the page.
 
 The preview header includes a mock user-language selector for `English / LTR`
 and `العربية / RTL`. It preserves the selected mock language in the browser.

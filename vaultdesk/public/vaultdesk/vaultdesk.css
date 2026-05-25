@@ -25,6 +25,85 @@
 	color: var(--data-text);
 	font-family: Inter, "Segoe UI", Arial, sans-serif;
 	margin: -15px -15px 0;
+	min-width: 0;
+}
+
+html.vaultdesk-preview-document,
+.vaultdesk-preview-body {
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+	width: 100%;
+}
+
+.vaultdesk-preview-body {
+	background: var(--data-bg, #f5f7fb);
+}
+
+.vaultdesk-standalone {
+	height: 100vh;
+	height: 100dvh;
+	margin: 0;
+	overflow: hidden;
+	width: 100%;
+}
+
+.vaultdesk-standalone .vaultdesk-shell {
+	border: 0;
+	border-radius: 0;
+	height: 100%;
+	min-height: 0;
+	width: 100%;
+}
+
+.data-startup {
+	align-items: center;
+	color: var(--data-muted);
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	height: 100%;
+	justify-content: center;
+	padding: 24px;
+	text-align: center;
+}
+
+.data-startup strong {
+	color: var(--data-text);
+	font-size: 22px;
+	font-weight: 650;
+}
+
+.data-startup p {
+	font-size: 14px;
+	line-height: 1.6;
+	margin: 0;
+	max-width: 420px;
+}
+
+.data-startup.is-error {
+	background: var(--data-bg);
+}
+
+.data-startup.is-error strong {
+	font-size: 18px;
+}
+
+.data-startup.is-error::before {
+	background: var(--data-danger-soft);
+	border-radius: 50%;
+	color: var(--data-danger);
+	content: "!";
+	display: grid;
+	font-size: 22px;
+	font-weight: 700;
+	height: 52px;
+	place-items: center;
+	width: 52px;
+}
+
+.data-startup .data-btn {
+	margin-top: 6px;
 }
 
 .vaultdesk-shell,
@@ -41,7 +120,9 @@
 	flex-direction: column;
 	height: min(900px, calc(100vh - 126px));
 	min-height: 650px;
+	min-width: 0;
 	overflow: hidden;
+	width: 100%;
 }
 
 .data-icon {
@@ -62,7 +143,8 @@
 	border-bottom: 1px solid var(--data-border);
 	display: grid;
 	gap: 22px;
-	grid-template-columns: minmax(170px, 236px) minmax(260px, 1fr) auto;
+	grid-template-columns: clamp(164px, 16.5vw, 236px) minmax(190px, 620px) minmax(0, 1fr);
+	min-width: 0;
 	padding: 18px 22px;
 }
 
@@ -70,6 +152,7 @@
 	align-items: center;
 	display: flex;
 	gap: 12px;
+	min-width: 0;
 }
 
 .data-title-group h1 {
@@ -107,6 +190,7 @@
 	gap: 10px;
 	height: 46px;
 	max-width: 620px;
+	min-width: 0;
 	padding: 0 14px;
 	transition:
 		background var(--data-motion-fast),
@@ -137,7 +221,10 @@
 
 .data-header-actions {
 	display: flex;
+	flex-wrap: nowrap;
 	gap: 10px;
+	justify-self: end;
+	min-width: 0;
 }
 
 .data-language {
@@ -234,8 +321,11 @@
 	animation: data-fade-up var(--data-motion-medium) 70ms var(--data-motion-ease) both;
 	display: grid;
 	flex: 1;
-	grid-template-columns: 236px minmax(380px, 1fr) 304px;
+	grid-template-columns: clamp(196px, 16.5vw, 236px) minmax(0, 1fr) clamp(264px, 21vw, 304px);
 	min-height: 0;
+	min-width: 0;
+	overflow: hidden;
+	position: relative;
 }
 
 .data-sidebar {
@@ -245,6 +335,7 @@
 	flex-direction: column;
 	overflow: hidden;
 	padding: 16px 12px;
+	min-width: 0;
 }
 
 .data-navigation {
@@ -356,6 +447,7 @@
 	gap: 12px;
 	height: 62px;
 	justify-content: space-between;
+	min-width: 0;
 	padding: 0 20px;
 }
 
@@ -413,6 +505,7 @@
 	display: flex;
 	flex: 0 0 auto;
 	gap: 14px;
+	max-width: 100%;
 }
 
 .data-sort {
@@ -466,9 +559,11 @@
 .data-drop-surface {
 	flex: 1;
 	min-height: 0;
-	overflow: auto;
+	overflow-x: hidden;
+	overflow-y: auto;
 	padding: 22px;
 	position: relative;
+	min-width: 0;
 	transition: background var(--data-motion-medium) var(--data-motion-ease);
 }
 
@@ -504,7 +599,8 @@
 .data-grid {
 	display: grid;
 	gap: 14px;
-	grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(min(196px, 100%), 1fr));
+	min-width: 0;
 }
 
 .data-card {
@@ -721,11 +817,16 @@
 	border: 1px solid var(--data-border);
 	border-radius: 10px;
 	box-shadow: var(--data-shadow);
-	min-width: 228px;
+	max-height: calc(100vh - 16px);
+	max-height: calc(100dvh - 16px);
+	max-width: calc(100vw - 16px);
+	min-width: min(228px, calc(100vw - 16px));
+	overflow-y: auto;
 	padding: 6px;
 	position: fixed;
 	z-index: 1080;
 	transform-origin: top left;
+	width: min(228px, calc(100vw - 16px));
 }
 
 .data-context-menu button {
@@ -777,6 +878,8 @@
 	background: var(--data-panel);
 	border: 1px solid var(--data-border);
 	border-radius: 10px;
+	max-width: 100%;
+	min-width: 0;
 	overflow: visible;
 	transition: box-shadow var(--data-motion-medium);
 }
@@ -784,6 +887,7 @@
 .data-table {
 	border-collapse: collapse;
 	table-layout: fixed;
+	max-width: 100%;
 	width: 100%;
 }
 
@@ -802,8 +906,11 @@
 	color: var(--data-text);
 	font-size: 13px;
 	height: 61px;
+	overflow: hidden;
 	padding: 0 14px;
 	position: relative;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .data-table tbody tr {
@@ -854,14 +961,23 @@
 	font-weight: 550;
 	gap: 12px;
 	max-width: 100%;
+	min-width: 0;
 	overflow: hidden;
 	padding: 0;
 	white-space: nowrap;
 	transition: color var(--data-motion-fast);
+	width: 100%;
 }
 
 .data-table-name:hover {
 	color: var(--data-primary);
+}
+
+.data-table-name .data-item-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .data-table-name .data-file-icon {
@@ -883,6 +999,10 @@
 	justify-content: flex-end;
 }
 
+.data-table td:last-child {
+	overflow: visible;
+}
+
 .data-row-actions > .is-starred {
 	color: #f2a914;
 	fill: #f2a914;
@@ -900,6 +1020,7 @@
 	border-left: 1px solid var(--data-border);
 	overflow-y: auto;
 	padding: 22px 20px;
+	min-width: 0;
 	transition: box-shadow var(--data-motion-medium) var(--data-motion-ease);
 }
 
@@ -2266,25 +2387,25 @@
 
 @media (max-width: 1199px) {
 	.data-layout {
-		grid-template-columns: 220px minmax(380px, 1fr);
+		grid-template-columns: clamp(190px, 20vw, 220px) minmax(0, 1fr);
 	}
 
 	.data-details {
 		box-shadow: -12px 0 34px rgba(21, 36, 57, 0.16);
 		display: block;
-		height: calc(100vh - 114px);
+		height: auto;
+		inset-block: 0;
+		inset-inline-end: 0;
 		opacity: 0;
 		pointer-events: none;
-		position: fixed;
-		right: 0;
-		top: 64px;
-		transform: translateX(100%);
+		position: absolute;
+		transform: translateX(calc(100% + 1px));
 		transition:
 			opacity var(--data-motion-medium) var(--data-motion-ease),
 			transform var(--data-motion-medium) var(--data-motion-ease),
 			visibility 0s var(--data-motion-medium);
 		visibility: hidden;
-		width: min(320px, 92vw);
+		width: min(320px, calc(100% - 20px));
 		z-index: 40;
 	}
 
@@ -2298,9 +2419,7 @@
 
 	.vaultdesk-shell[dir="rtl"] .data-details {
 		box-shadow: 12px 0 34px rgba(21, 36, 57, 0.16);
-		left: 0;
-		right: auto;
-		transform: translateX(-100%);
+		transform: translateX(calc(-100% - 1px));
 	}
 
 	.vaultdesk-shell[dir="rtl"] .data-details.is-open {
@@ -2308,8 +2427,31 @@
 	}
 }
 
+@media (max-width: 1040px) {
+	.data-header {
+		gap: 12px;
+		grid-template-columns: minmax(0, 1fr) auto;
+		padding: 14px 16px;
+	}
+
+	.data-title-group {
+		grid-column: 1;
+	}
+
+	.data-search {
+		grid-column: 1 / -1;
+		grid-row: 2;
+		max-width: none;
+	}
+
+	.data-header-actions {
+		grid-column: 2;
+		grid-row: 1;
+	}
+}
+
 @media (max-width: 840px) {
-	.vaultdesk-mount {
+	.vaultdesk-mount:not(.vaultdesk-standalone) {
 		margin: -15px -10px 0;
 	}
 
@@ -2320,8 +2462,7 @@
 	}
 
 	.data-header {
-		gap: 12px;
-		grid-template-columns: 1fr auto;
+		grid-template-columns: minmax(0, 1fr) auto;
 		padding: 14px;
 	}
 
@@ -2407,7 +2548,7 @@
 	}
 
 	.data-grid {
-		grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(min(156px, 100%), 1fr));
 	}
 
 	.data-table th:nth-child(2),
@@ -2487,6 +2628,60 @@
 	.preview-details {
 		grid-column: 1 / -1;
 		max-height: 190px;
+	}
+}
+
+@media (max-width: 560px) {
+	.data-header {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.data-title-group,
+	.data-search,
+	.data-header-actions {
+		grid-column: 1;
+	}
+
+	.data-header-actions {
+		grid-row: 3;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.data-language {
+		margin-inline-start: auto;
+	}
+
+	.data-view-controls {
+		justify-content: flex-end;
+		width: 100%;
+	}
+
+	.data-content-head {
+		align-items: flex-start;
+	}
+
+	.data-modal-backdrop {
+		padding: 12px;
+	}
+
+	.data-modal-body {
+		padding: 18px 16px;
+	}
+
+	.data-modal footer {
+		padding: 12px 16px;
+	}
+
+	.data-toast-stack,
+	.vaultdesk-shell[dir="rtl"] .data-toast-stack {
+		left: 12px;
+		right: 12px;
+	}
+
+	.data-toast {
+		min-width: 0;
+		width: 100%;
 	}
 }
 

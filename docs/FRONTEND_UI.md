@@ -104,6 +104,21 @@ RTL mode reverses inline slide offsets and responsive panel direction. Under
 or progress animation are collapsed to near-instant updates while controls
 and status content remain available.
 
+## Standalone Responsive Layout
+
+`index.html` marks the mock preview as a standalone viewport-sized page so it
+does not inherit Desk-page negative margins or reduced-height assumptions.
+The local shell fills `100dvh` where supported, contains its internal scroll
+regions, and uses shrinkable sidebar/main/details grid tracks. At narrower
+desktop widths the details panel becomes an in-shell overlay, while mobile
+navigation and header controls reflow without creating horizontal document
+scrolling. Long list and breadcrumb labels truncate rather than increasing the
+layout width.
+
+The standalone bootstrap renders a loading state before importing application
+modules. If a script fails to load or initialization fails, it replaces the
+mount with a localized retry message instead of leaving a blank page.
+
 ## Live Endpoint Mapping
 
 | UI Feature | Backend Method |
