@@ -20,6 +20,15 @@ export function renderBreadcrumbs(items, label) {
 }
 
 export function renderLoading(view, i18n, motionClass = "") {
+	if (view === "columns") {
+		const rows = Array.from({ length: 5 }, () => '<div class="data-skeleton is-column-row"></div>').join("");
+		return `
+			<div class="data-columns data-content-motion ${attribute(motionClass)}"
+				aria-label="${attribute(i18n.t("loading.items"))}">
+				<section class="data-column">${rows}</section>
+			</div>
+		`;
+	}
 	const cells = Array.from({ length: view === "grid" ? 8 : 5 }, () => `
 		<div class="data-skeleton ${view === "grid" ? "is-card" : "is-row"}"></div>
 	`).join("");
@@ -55,6 +64,7 @@ export function renderEmpty(section, canUpload, i18n, motionClass = "") {
 }
 
 export function renderItems(items, state, i18n, motionClass = "") {
+	if (state.view === "columns") return renderColumns(items, state, i18n, motionClass);
 	if (!items.length) return renderEmpty(state.section, state.canUpload, i18n, motionClass);
 	return state.view === "grid"
 		? renderGrid(items, state, i18n, motionClass)
@@ -64,27 +74,32 @@ export function renderItems(items, state, i18n, motionClass = "") {
 function renderGrid(items, state, i18n, motionClass) {
 	return `
 		<div class="data-grid data-content-motion ${attribute(motionClass)}">
-			${items.map((item, index) => `
-				<article class="data-card ${state.selected === item.name ? "is-selected" : ""}"
-					data-action="select" data-id="${attribute(item.name)}"
-					data-context-item="${attribute(item.name)}" tabindex="0" style="--item-index: ${index}">
-					<div class="data-card-header">
-						<div class="data-file-icon is-${itemIcon(item)}">${icon(itemIcon(item))}</div>
-						${item.is_starred ? icon("star", "is-starred") : ""}
-						${renderActionButton(item, i18n)}
-					</div>
-					<button class="data-card-name" data-action="${item.type === "folder" ? "open-folder" : "preview"}"
-						data-id="${attribute(item.name)}">
-						${escapeHtml(item.display_name)}
-					</button>
-					<div class="data-card-meta">
-						<span>${formatDate(item.modified, i18n.language)}</span>
-						<span>${escapeHtml(item.business_owner || "-")}</span>
-					</div>
-					${renderMenu(item, state, i18n)}
-				</article>
-			`).join("")}
+			${items.map((item, index) => renderGridItem(item, index, state, i18n)).join("")}
 		</div>
+	`;
+}
+
+function renderGridItem(item, index, state, i18n) {
+	const primaryAction = itemPrimaryAction(item, state);
+	return `
+		<article class="data-card ${state.selected === item.name ? "is-selected" : ""}"
+			${primaryAction ? `data-action="${primaryAction}" data-id="${attribute(item.name)}"` : ""}
+			data-context-item="${attribute(item.name)}" tabindex="0" style="--item-index: ${index}">
+			<div class="data-card-header">
+				<div class="data-file-icon is-${itemIcon(item)}">${icon(itemIcon(item))}</div>
+				${item.is_starred ? icon("star", "is-starred") : ""}
+				${renderActionButton(item, i18n)}
+			</div>
+			<button class="data-card-name" data-action="${item.type === "folder" ? "open-folder" : "preview"}"
+				data-id="${attribute(item.name)}">
+				${escapeHtml(item.display_name)}
+			</button>
+			<div class="data-card-meta">
+				<span>${formatDate(item.modified, i18n.language)}</span>
+				<span>${escapeHtml(item.business_owner || "-")}</span>
+			</div>
+			${renderMenu(item, state, i18n)}
+		</article>
 	`;
 }
 
@@ -97,27 +112,111 @@ function renderList(items, state, i18n, motionClass) {
 					<tr><th>${t("table.name")}</th><th>${t("table.type")}</th><th>${t("table.owner")}</th><th>${t("table.modified")}</th><th>${t("table.size")}</th><th aria-label="${t("table.actions")}"></th></tr>
 				</thead>
 				<tbody>
-					${items.map((item, index) => `
-						<tr class="${state.selected === item.name ? "is-selected" : ""}" data-action="select"
-							data-id="${attribute(item.name)}" data-context-item="${attribute(item.name)}"
-							style="--item-index: ${index}">
-							<td>
-								<button class="data-table-name" data-action="${item.type === "folder" ? "open-folder" : "preview"}"
-									data-id="${attribute(item.name)}">
-									<span class="data-file-icon is-${itemIcon(item)}">${icon(itemIcon(item))}</span>
-									<span class="data-item-label">${escapeHtml(item.display_name)}</span>
-								</button>
-							</td>
-							<td>${escapeHtml(item.type === "folder" ? t("item.folder") : item.file_extension?.toUpperCase() || t("item.file"))}</td>
-							<td>${escapeHtml(item.business_owner || "-")}</td>
-							<td>${formatDate(item.modified, i18n.language)}</td>
-							<td>${item.type === "folder" ? "-" : formatBytes(item.file_size)}</td>
-							<td class="data-row-actions">${item.is_starred ? icon("star", "is-starred") : ""}${renderActionButton(item, i18n)}${renderMenu(item, state, i18n)}</td>
-						</tr>
-					`).join("")}
+					${items.map((item, index) => renderListRow(item, index, state, i18n)).join("")}
 				</tbody>
 			</table>
 		</div>
+	`;
+}
+
+function renderListRow(item, index, state, i18n) {
+	const t = i18n.t;
+	const primaryAction = itemPrimaryAction(item, state);
+	return `
+		<tr class="${state.selected === item.name ? "is-selected" : ""}"
+			${primaryAction ? `data-action="${primaryAction}" data-id="${attribute(item.name)}"` : ""}
+			data-context-item="${attribute(item.name)}"
+			style="--item-index: ${index}">
+			<td>
+				<button class="data-table-name" data-action="${item.type === "folder" ? "open-folder" : "preview"}"
+					data-id="${attribute(item.name)}">
+					<span class="data-file-icon is-${itemIcon(item)}">${icon(itemIcon(item))}</span>
+					<span class="data-item-label">${escapeHtml(item.display_name)}</span>
+				</button>
+			</td>
+			<td>${escapeHtml(item.type === "folder" ? t("item.folder") : item.file_extension?.toUpperCase() || t("item.file"))}</td>
+			<td>${escapeHtml(item.business_owner || "-")}</td>
+			<td>${formatDate(item.modified, i18n.language)}</td>
+			<td>${item.type === "folder" ? "-" : formatBytes(item.file_size)}</td>
+			<td class="data-row-actions">${item.is_starred ? icon("star", "is-starred") : ""}${renderActionButton(item, i18n)}${renderMenu(item, state, i18n)}</td>
+		</tr>
+	`;
+}
+
+function itemPrimaryAction(item, state) {
+	if (state.section === "trash") return null;
+	return item.type === "folder" ? "open-folder" : "preview";
+}
+
+function renderColumns(items, state, i18n, motionClass) {
+	const columns = normalizeColumns(items, state, i18n);
+	return `
+		<div class="data-columns data-content-motion ${attribute(motionClass)}">
+			${columns.map((column, index) => renderColumn(column, index, state, i18n)).join("")}
+		</div>
+	`;
+}
+
+function normalizeColumns(items, state, i18n) {
+	if (state.columns?.length) return state.columns;
+	return [{
+		folder: state.currentFolder || null,
+		title: state.currentFolder?.display_name || i18n.t(`section.${state.section}`),
+		items,
+		selected: null,
+		loading: false,
+		error: null,
+	}];
+}
+
+function renderColumn(column, index, state, i18n) {
+	const title = column.title || column.folder?.display_name || i18n.t(`section.${state.section}`);
+	return `
+		<section class="data-column" aria-label="${attribute(title)}" data-column-index="${index}">
+			<header class="data-column-header">${escapeHtml(title)}</header>
+			<div class="data-column-list">
+				${renderColumnBody(column, index, state, i18n)}
+			</div>
+		</section>
+	`;
+}
+
+function renderColumnBody(column, index, state, i18n) {
+	if (column.loading) {
+		return Array.from({ length: 5 }, () => '<div class="data-skeleton is-column-row"></div>').join("");
+	}
+	if (column.error) {
+		return `
+			<div class="data-column-state">
+				${icon("warning")}
+				<p>${escapeHtml(column.error)}</p>
+			</div>
+		`;
+	}
+	if (!column.items?.length) {
+		return `
+			<div class="data-column-state">
+				${icon("folder")}
+				<p>${i18n.t("empty.my.title")}</p>
+			</div>
+		`;
+	}
+	return column.items.map((item, itemIndex) => renderColumnItem(item, itemIndex, column, index, state)).join("");
+}
+
+function renderColumnItem(item, itemIndex, column, index, state) {
+	const isFolder = item.type === "folder";
+	const action = isFolder && state.section !== "trash" ? "column-open-folder" : itemPrimaryAction(item, state);
+	const selected = column.selected === item.name || state.selected === item.name;
+	return `
+		<button class="data-column-item ${selected ? "is-selected" : ""}"
+			${action ? `data-action="${action}" data-id="${attribute(item.name)}"` : ""}
+			data-column-index="${index}"
+			data-context-item="${attribute(item.name)}" style="--item-index: ${itemIndex}">
+			<span class="data-file-icon is-${itemIcon(item)}">${icon(itemIcon(item))}</span>
+			<span class="data-column-label">${escapeHtml(item.display_name)}</span>
+			${isFolder && state.section !== "trash" ? icon("chevron", "data-column-chevron") : ""}
+		</button>
 	`;
 }
 
@@ -158,7 +257,6 @@ function renderMenu(item, state, i18n) {
 		if (hasCapability(item, "manage_permissions")) entries.push(action("share", t("action.manage_access"), "share"));
 		if (hasCapability(item, "delete")) entries.push(action("trash", t("action.move_to_trash"), "trash"));
 	}
-	entries.push(action("details", t("action.details"), "info"));
 	return `<div class="data-menu" data-menu="${attribute(item.name)}" hidden>${entries.join("")}</div>`;
 }
 
@@ -240,22 +338,89 @@ export function renderFormDialog(title, fieldLabel, initialValue, submitAction, 
 	);
 }
 
-export function renderMoveDialog(item, folders, i18n) {
+export function renderMoveDialog(item, state, i18n) {
 	const t = i18n.t;
+	const currentFolder = state.currentFolder;
+	const canMoveHere = Boolean(
+		currentFolder
+		&& currentFolder.name !== item.name
+		&& (!currentFolder.capabilities || hasCapability(currentFolder, "upload"))
+	);
 	return renderModal(
 		t("dialog.move", { name: item.display_name }),
-		`<label class="data-field"><span>${t("dialog.destination")}</span>
-			<select data-role="destination">
-				${folders.filter((folder) => folder.name !== item.name).map((folder) => `
-					<option value="${attribute(folder.name)}">${escapeHtml(folder.display_name)}</option>
-				`).join("")}
-			</select>
-		</label>`,
+		`<div class="data-move-browser">
+			<div class="data-move-current">
+				<span>${t("dialog.destination")}</span>
+				<strong>${escapeHtml(currentFolder?.display_name || "-")}</strong>
+			</div>
+			${renderMoveBreadcrumbs(state.breadcrumbs || [], i18n)}
+			${renderMoveFolderList(item, state, i18n)}
+		</div>`,
 		`<button class="data-btn data-btn-secondary" data-action="close-modal">${t("action.cancel")}</button>
-		 <button class="data-btn data-btn-primary" data-action="confirm-move" data-id="${attribute(item.name)}">${t("action.move")}</button>`,
-		"",
+		 <button class="data-btn data-btn-primary" data-action="confirm-move" data-id="${attribute(item.name)}"
+			${currentFolder ? `data-destination="${attribute(currentFolder.name)}"` : ""}
+			${canMoveHere && !state.loading && !state.error ? "" : "disabled"}>${t("action.move")}</button>`,
+		"data-move-modal",
 		i18n
 	);
+}
+
+function renderMoveBreadcrumbs(breadcrumbs, i18n) {
+	if (!breadcrumbs.length) return "";
+	const lastIndex = breadcrumbs.length - 1;
+	return `
+		<nav class="data-move-breadcrumbs" aria-label="${attribute(i18n.t("nav.breadcrumb"))}">
+			${breadcrumbs.map((folder, index) => `
+				${index ? icon("chevron") : ""}
+				<button data-action="move-open-folder" data-id="${attribute(folder.name)}"
+					${index === lastIndex ? "disabled" : ""}>${escapeHtml(folder.display_name)}</button>
+			`).join("")}
+		</nav>
+	`;
+}
+
+function renderMoveFolderList(item, state, i18n) {
+	const t = i18n.t;
+	if (state.loading) {
+		return `
+			<div class="data-move-list" aria-label="${attribute(t("loading.items"))}">
+				<div class="data-skeleton is-move-row"></div>
+				<div class="data-skeleton is-move-row"></div>
+				<div class="data-skeleton is-move-row"></div>
+			</div>
+		`;
+	}
+	if (state.error) {
+		return `
+			<div class="data-move-state">
+				${icon("warning")}
+				<p>${escapeHtml(state.error)}</p>
+				<button class="data-btn data-btn-secondary" data-action="move-open-folder"
+					data-id="${attribute(state.currentFolder?.name || "")}">${t("action.try_again")}</button>
+			</div>
+		`;
+	}
+	const folders = (state.folders || []).filter((folder) => folder.name !== item.name);
+	if (!folders.length) {
+		return `
+			<div class="data-move-state">
+				${icon("folder")}
+				<p>${t("dialog.move_empty")}</p>
+			</div>
+		`;
+	}
+	return `
+		<div class="data-move-list" role="list">
+			${folders.map((folder) => `
+				<button class="data-move-folder" role="listitem" data-action="move-open-folder"
+					data-id="${attribute(folder.name)}">
+					<span class="data-file-icon is-folder">${icon("folder")}</span>
+					<span>${escapeHtml(folder.display_name)}</span>
+					${icon("chevron", "data-move-chevron")}
+				</button>
+			`).join("")}
+		</div>
+	`;
 }
 
 export function renderDeleteDialog(item, i18n) {

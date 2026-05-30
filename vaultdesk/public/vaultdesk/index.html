@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>VaultDesk</title>
 		<link rel="icon" href="data:,">
-		<link rel="stylesheet" href="./vaultdesk.css?v=responsive-startup-20260525">
+		<link rel="stylesheet" href="./vaultdesk.css?v=lucide-icons-20260530">
 	</head>
 	<body class="vaultdesk-preview-body">
 		<div id="vaultdesk-preview" class="vaultdesk-mount vaultdesk-standalone" aria-live="polite"></div>
@@ -63,7 +63,7 @@
 			}
 
 			async function startPreview() {
-				const module = await import("./app.js?v=responsive-startup-20260525");
+				const module = await import("./app.js?v=lucide-icons-20260530");
 
 				// Local preview only: this entry always uses browser-memory fixtures, never ERP/Frappe APIs.
 				const app = module.mountVaultDesk(mount, { apiMode: "mock" });

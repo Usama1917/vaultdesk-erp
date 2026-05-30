@@ -75,6 +75,9 @@ export function renderShell(apiMode, i18n) {
 								<button type="button" data-action="view" data-view="list" aria-label="${t("view.list")}">
 									${icon("list")}
 								</button>
+								<button type="button" data-action="view" data-view="columns" aria-label="${t("view.columns")}">
+									${icon("columns")}
+								</button>
 							</div>
 						</div>
 					</div>

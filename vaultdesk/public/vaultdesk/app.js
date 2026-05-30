@@ -39,6 +39,7 @@ class VaultDeskApp {
 	constructor(element, options) {
 		this.element = element;
 		const mode = options.apiMode === "live" ? "live" : "mock";
+		const savedView = normalizeView(window.localStorage.getItem("vaultdesk-view"));
 		this.i18n = createI18n(options.language || detectInitialLanguage(mode));
 		this.api = options.api || (mode === "live"
 			? new LiveVaultDeskApi(this.i18n)
@@ -55,7 +56,9 @@ class VaultDeskApp {
 			loading: true,
 			error: null,
 			query: "",
-			view: window.localStorage.getItem("vaultdesk-view") || "grid",
+			view: savedView,
+			columns: [],
+			clipboardItem: null,
 			sortBy: "name",
 			sortOrder: "asc",
 		};
@@ -231,6 +234,7 @@ class VaultDeskApp {
 			this.state.currentFolder = content.folder;
 			this.state.items = content.items;
 			this.state.breadcrumbs = breadcrumbs;
+			this.state.columns = [this.createColumn(content.folder, content.items)];
 			this.state.selected = null;
 			this.finishLoading();
 		} catch (error) {
@@ -249,6 +253,7 @@ class VaultDeskApp {
 		try {
 			this.state.items = await this.api.getSection(section, this.sortOptions());
 			this.state.breadcrumbs = [];
+			this.state.columns = [this.createColumn(null, this.state.items, this.i18n.t(`section.${section}`))];
 			this.state.selected = null;
 			this.finishLoading();
 		} catch (error) {
@@ -267,6 +272,7 @@ class VaultDeskApp {
 		try {
 			this.state.items = await this.api.search(value, this.sortOptions());
 			this.state.breadcrumbs = [];
+			this.state.columns = [this.createColumn(null, this.state.items, this.i18n.t("section.search"))];
 			this.state.selected = null;
 			this.finishLoading();
 		} catch (error) {
@@ -287,6 +293,7 @@ class VaultDeskApp {
 			view: () => this.setView(target.dataset.view),
 			retry: () => this.refresh(),
 			"open-folder": () => this.openFolder(target.dataset.id),
+			"column-open-folder": () => this.openColumnFolder(target.dataset.id, target.dataset.columnIndex),
 			select: () => this.select(item),
 			details: () => this.select(item),
 			"close-details": () => this.select(null),
@@ -295,6 +302,7 @@ class VaultDeskApp {
 			refresh: () => this.refresh(),
 			"set-sort": () => this.setSort(target.dataset.sort),
 			"toggle-menu": () => this.toggleMenu(target.dataset.id),
+			"move-open-folder": () => this.openMoveDestination(target.dataset.id),
 			preview: () => this.preview(item),
 			download: () => this.api.download(item),
 			"preview-download": () => this.downloadPreviewItem(),
@@ -304,7 +312,8 @@ class VaultDeskApp {
 			"preview-retry": () => this.retryPreview(),
 			rename: () => this.rename(item),
 			move: () => this.move(item),
-			copy: () => this.copyItem(item),
+			copy: () => this.copyToClipboard(item),
+			paste: () => this.pasteClipboard(item?.type === "folder" ? item : this.currentPasteFolder()),
 			trash: () => this.confirmTrash(item),
 			restore: () => this.restore(item),
 			star: () => this.star(item),
@@ -323,7 +332,7 @@ class VaultDeskApp {
 			"close-modal": () => this.closeModal(),
 			"confirm-folder": () => this.confirmNewFolder(),
 			"confirm-rename": () => this.confirmRename(),
-			"confirm-move": () => this.confirmMove(item),
+			"confirm-move": () => this.confirmMove(item || this.moveDialog?.item, target.dataset.destination),
 			"confirm-trash": () => this.trash(item),
 			"permission-type": () => this.changePrincipalType(target.dataset.type),
 			"select-principal": () => this.selectPrincipal(target),
@@ -337,13 +346,84 @@ class VaultDeskApp {
 	}
 
 	setView(view) {
-		const nextView = view === "list" ? "list" : "grid";
+		const nextView = normalizeView(view);
 		if (nextView === this.state.view) return;
 		this.state.view = nextView;
 		window.localStorage.setItem("vaultdesk-view", this.state.view);
+		this.ensureColumns();
 		this.syncViewControls();
 		this.contentMotion = "is-switching-view";
 		this.renderContent();
+	}
+
+	createColumn(folder, items, title = "", options = {}) {
+		return {
+			folder,
+			title: title || folder?.display_name || "",
+			items: items || [],
+			selected: options.selected || null,
+			loading: Boolean(options.loading),
+			error: options.error || null,
+		};
+	}
+
+	ensureColumns() {
+		if (this.state.columns.length) return;
+		this.state.columns = [this.createColumn(
+			this.state.currentFolder,
+			this.state.items,
+			this.i18n.t(`section.${this.state.section}`)
+		)];
+	}
+
+	async openColumnFolder(folderName, columnIndex) {
+		if (!folderName) return;
+		const index = Number(columnIndex);
+		const parentIndex = Number.isFinite(index) ? index : Math.max(0, this.state.columns.length - 1);
+		const folder = this.findItem(folderName);
+		const token = Symbol("column-open");
+		this.columnNavigationToken = token;
+		this.activateSection("my");
+		this.state.query = "";
+		this.element.querySelector('[data-role="search"]').value = "";
+		this.state.error = null;
+		const columns = this.state.columns.length ? this.state.columns.slice(0, parentIndex + 1) : [
+			this.createColumn(this.state.currentFolder, this.state.items),
+		];
+		if (columns[parentIndex]) columns[parentIndex] = { ...columns[parentIndex], selected: folderName };
+		this.state.columns = [
+			...columns,
+			this.createColumn(folder, [], folder?.display_name || "", { loading: true }),
+		];
+		this.renderContent();
+		try {
+			const [content, breadcrumbs] = await Promise.all([
+				this.api.getFolderContents(folderName, this.sortOptions()),
+				this.api.getBreadcrumbs(folderName),
+				this.loadTreeChildren(folderName),
+			]);
+			if (this.columnNavigationToken !== token) return;
+			this.state.currentFolder = content.folder;
+			this.state.items = content.items;
+			this.state.breadcrumbs = breadcrumbs;
+			this.state.selected = null;
+			this.state.columns = [
+				...columns,
+				this.createColumn(content.folder, content.items),
+			];
+			this.contentMotion = "is-entering";
+			this.render();
+		} catch (error) {
+			if (this.columnNavigationToken !== token) return;
+			const failed = this.state.columns.slice();
+			failed[failed.length - 1] = {
+				...failed[failed.length - 1],
+				loading: false,
+				error: error.message || this.i18n.t("toast.load_failed"),
+			};
+			this.state.columns = failed;
+			this.renderContent();
+		}
 	}
 
 	setSort(value) {
@@ -430,25 +510,67 @@ class VaultDeskApp {
 	async move(item) {
 		if (!hasCapability(item, "move")) return;
 		this.state.dialogItem = item;
+		this.moveDialog = {
+			item,
+			currentFolder: this.state.root,
+			breadcrumbs: this.state.root ? [this.state.root] : [],
+			folders: [],
+			loading: true,
+			error: null,
+			token: null,
+		};
+		this.renderMoveDialog(true);
+		await this.openMoveDestination(this.state.root?.name);
+	}
+
+	async openMoveDestination(folderName) {
+		if (!this.moveDialog || !folderName) return;
+		const token = Symbol("move-destination");
+		this.moveDialog.token = token;
+		this.moveDialog.loading = true;
+		this.moveDialog.error = null;
+		this.renderMoveDialog();
 		try {
-			const folders = this.api.getAllFolders
-				? await this.api.getAllFolders()
-				: [this.state.root, ...Object.values(this.state.tree).flat()];
-			this.setModalContent(renderMoveDialog(item, folders, this.i18n), true);
+			const [folders, breadcrumbs] = await Promise.all([
+				this.api.getFolderTree(folderName),
+				this.api.getBreadcrumbs(folderName),
+			]);
+			if (!this.moveDialog || this.moveDialog.token !== token) return;
+			this.moveDialog.currentFolder = breadcrumbs.at(-1) || this.findItem(folderName);
+			this.moveDialog.breadcrumbs = breadcrumbs;
+			this.moveDialog.folders = folders.filter((folder) => folder.name !== this.moveDialog.item.name);
+			this.moveDialog.loading = false;
+			this.renderMoveDialog();
 		} catch (error) {
-			this.toast(error.message, "error");
+			if (!this.moveDialog || this.moveDialog.token !== token) return;
+			this.moveDialog.loading = false;
+			this.moveDialog.error = error.message || this.i18n.t("toast.load_failed");
+			this.renderMoveDialog();
 		}
 	}
 
-	async confirmMove(item) {
-		const destination = this.regions.modal.querySelector('[data-role="destination"]').value;
+	renderMoveDialog(animate = false) {
+		if (!this.moveDialog) return;
+		this.setModalContent(renderMoveDialog(this.moveDialog.item, this.moveDialog, this.i18n), animate);
+	}
+
+	async confirmMove(item, destination) {
+		if (!item || !destination) return;
 		await this.perform(() => this.api.moveItem(item, destination), this.i18n.t("toast.item_moved"), true);
 	}
 
-	async copyItem(item) {
-		if (!item || !this.canCopy(item)) return;
+	copyToClipboard(item) {
+		if (!this.canCopy(item)) return;
+		this.state.clipboardItem = item;
+		this.toast(this.i18n.t("toast.item_copied", { name: item.display_name }), "success");
+	}
+
+	async pasteClipboard(destinationFolder = this.state.currentFolder) {
+		const item = this.state.clipboardItem;
+		if (!item) return this.toast(this.i18n.t("toast.nothing_to_paste"), "warning");
+		if (!this.canPaste(destinationFolder)) return this.toast(this.i18n.t("toast.no_paste"), "warning");
 		await this.perform(
-			() => this.api.copyItem(item, this.state.currentFolder.name),
+			() => this.api.copyItem(item, destinationFolder.name),
 			this.i18n.t("toast.copy_created"),
 			false
 		);
@@ -957,6 +1079,8 @@ class VaultDeskApp {
 		this.regions.items.innerHTML = renderItems(this.state.items, {
 			section: this.state.section,
 			view: this.state.view,
+			currentFolder: this.state.currentFolder,
+			columns: this.state.columns,
 			selected: this.state.selected?.name,
 			canUpload: this.canUpload(),
 			supportsVersions: this.supportsVersions(),
@@ -988,6 +1112,7 @@ class VaultDeskApp {
 		const entries = [
 			this.contextEntry("new-folder", t("action.new_folder"), "plus", null, !this.canUpload()),
 			this.contextEntry("choose-upload", t("action.upload_file"), "upload", null, !this.canUpload()),
+			this.contextEntry("paste", t("action.paste"), "paste", null, !this.canPaste(this.currentPasteFolder())),
 			{ separator: true },
 			this.contextEntry("refresh", t("action.refresh"), "refresh"),
 			this.contextEntry("set-sort", t("sort.menu_name"), "list", { sort: "name:asc" }),
@@ -995,6 +1120,7 @@ class VaultDeskApp {
 			{ separator: true },
 			this.contextEntry("view", t("view.grid"), "grid", { view: "grid" }),
 			this.contextEntry("view", t("view.list"), "list", { view: "list" }),
+			this.contextEntry("view", t("view.columns"), "columns", { view: "columns" }),
 		];
 		this.markContextTarget(this.regions.drop);
 		this.showContextMenu(entries, event.clientX, event.clientY);
@@ -1007,6 +1133,7 @@ class VaultDeskApp {
 		const entries = [];
 		if (item.type === "folder") {
 			entries.push(this.contextEntry("open-folder", t("action.open"), "folder", { id: item.name }));
+			entries.push(this.contextEntry("paste", t("action.paste"), "paste", { id: item.name }, !this.canPaste(item)));
 		} else {
 			entries.push(this.contextEntry("preview", t("action.preview"), "info", { id: item.name }, !hasCapability(item, "view")));
 			entries.push(this.contextEntry("download", t("action.download"), "download", { id: item.name }, !hasCapability(item, "download")));
@@ -1091,6 +1218,7 @@ class VaultDeskApp {
 		this.regions.modal.classList.remove("is-opening", "is-closing");
 		this.regions.modal.innerHTML = "";
 		this.state.dialogItem = null;
+		this.moveDialog = null;
 		this.permissionDialog = null;
 		this.previewDialog = null;
 		this.versionDialog = null;
@@ -1119,6 +1247,7 @@ class VaultDeskApp {
 		if (!itemName) return null;
 		if (this.state.root?.name === itemName) return this.state.root;
 		return this.state.items.find((item) => item.name === itemName)
+			|| this.state.columns.flatMap((column) => [column.folder, ...(column.items || [])]).find((item) => item?.name === itemName)
 			|| Object.values(this.state.tree).flat().find((item) => item.name === itemName)
 			|| this.state.breadcrumbs.find((item) => item.name === itemName)
 			|| (this.state.currentFolder?.name === itemName ? this.state.currentFolder : null)
@@ -1129,13 +1258,26 @@ class VaultDeskApp {
 		return this.state.section === "my" && hasCapability(this.state.currentFolder, "upload");
 	}
 
+	currentPasteFolder() {
+		return this.state.section === "my" ? this.state.currentFolder : null;
+	}
+
 	canCopy(item) {
 		return Boolean(
 			item
 			&& item.name !== "root"
-			&& item.name !== this.state.currentFolder?.name
-			&& this.state.section === "my"
-			&& this.canUpload()
+			&& typeof this.api.copyItem === "function"
+		);
+	}
+
+	canPaste(destinationFolder = this.state.currentFolder) {
+		const item = this.state.clipboardItem;
+		return Boolean(
+			item
+			&& destinationFolder
+			&& destinationFolder.type === "folder"
+			&& destinationFolder.name !== item.name
+			&& hasCapability(destinationFolder, "upload")
 			&& typeof this.api.copyItem === "function"
 		);
 	}
@@ -1167,4 +1309,8 @@ class VaultDeskApp {
 			window.setTimeout(() => toast.remove(), 180);
 		}, 3220);
 	}
+}
+
+function normalizeView(view) {
+	return ["grid", "list", "columns"].includes(view) ? view : "grid";
 }

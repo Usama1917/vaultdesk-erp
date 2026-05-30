@@ -1,4 +1,39 @@
+@font-face {
+	font-display: swap;
+	font-family: "InterVariable";
+	font-style: normal;
+	font-weight: 100 900;
+	src: url("./fonts/inter/InterVariable.woff2") format("woff2");
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "InterVariable";
+	font-style: italic;
+	font-weight: 100 900;
+	src: url("./fonts/inter/InterVariable-Italic.woff2") format("woff2");
+}
+
 .vaultdesk-mount {
+	--font-stack: "InterVariable", "Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI",
+		"Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+		sans-serif;
+	--weight-regular: 420;
+	--weight-medium: 500;
+	--weight-semibold: 600;
+	--weight-bold: 700;
+	--weight-black: 800;
+	--text-tiny: 11px;
+	--text-2xs: 12px;
+	--text-xs: 12px;
+	--text-sm: 13px;
+	--text-md: 13px;
+	--text-base: 14px;
+	--text-lg: 16px;
+	--text-xl: 18px;
+	--text-2xl: 20px;
+	--text-3xl: 24px;
+	--text-4xl: 26px;
 	--data-bg: #f5f7fb;
 	--data-panel: #ffffff;
 	--data-panel-muted: #f8fafc;
@@ -22,8 +57,13 @@
 	--data-motion-pop: cubic-bezier(0.18, 0.89, 0.32, 1.18);
 	--data-inline-shift: 9px;
 	--data-nav-shift: 3px;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
 	color: var(--data-text);
-	font-family: Inter, "Segoe UI", Arial, sans-serif;
+	font-family: var(--font-stack);
+	font-optical-sizing: auto;
+	font-variation-settings: "opsz" 24;
+	font-weight: var(--weight-regular);
 	margin: -15px -15px 0;
 	min-width: 0;
 }
@@ -71,7 +111,7 @@ html.vaultdesk-preview-document,
 .data-startup strong {
 	color: var(--data-text);
 	font-size: 22px;
-	font-weight: 650;
+	font-weight: var(--weight-semibold);
 }
 
 .data-startup p {
@@ -96,7 +136,7 @@ html.vaultdesk-preview-document,
 	content: "!";
 	display: grid;
 	font-size: 22px;
-	font-weight: 700;
+	font-weight: var(--weight-bold);
 	height: 52px;
 	place-items: center;
 	width: 52px;
@@ -132,7 +172,7 @@ html.vaultdesk-preview-document,
 	stroke: currentColor;
 	stroke-linecap: round;
 	stroke-linejoin: round;
-	stroke-width: 1.75;
+	stroke-width: 2;
 	width: 20px;
 }
 
@@ -158,8 +198,8 @@ html.vaultdesk-preview-document,
 .data-title-group h1 {
 	color: var(--data-text);
 	font-size: 26px;
-	font-weight: 650;
-	letter-spacing: -0.025em;
+	font-weight: var(--weight-semibold);
+	letter-spacing: 0;
 	line-height: 1;
 	margin: 0;
 }
@@ -169,7 +209,7 @@ html.vaultdesk-preview-document,
 	border-radius: 20px;
 	color: var(--data-success);
 	font-size: 11px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	padding: 5px 10px;
 	text-transform: uppercase;
 	transition: transform var(--data-motion-fast) var(--data-motion-ease);
@@ -256,7 +296,7 @@ html.vaultdesk-preview-document,
 	cursor: pointer;
 	display: inline-flex;
 	font-size: 13px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 	gap: 7px;
 	height: 40px;
 	justify-content: center;
@@ -355,7 +395,7 @@ html.vaultdesk-preview-document,
 	cursor: pointer;
 	display: flex;
 	font-size: 14px;
-	font-weight: 500;
+	font-weight: var(--weight-medium);
 	gap: 11px;
 	height: 42px;
 	padding: 0 12px;
@@ -376,15 +416,15 @@ html.vaultdesk-preview-document,
 .data-nav-item.is-active {
 	background: var(--data-primary-soft);
 	color: var(--data-primary);
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	transform: translateX(var(--data-nav-shift));
 }
 
 .data-sidebar-heading {
 	color: var(--data-muted);
 	font-size: 11px;
-	font-weight: 650;
-	letter-spacing: 0.09em;
+	font-weight: var(--weight-semibold);
+	letter-spacing: 0;
 	padding: 22px 12px 10px;
 	text-transform: uppercase;
 }
@@ -485,7 +525,7 @@ html.vaultdesk-preview-document,
 
 .data-breadcrumbs button:last-child {
 	color: var(--data-text);
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 }
 
 .data-breadcrumbs button:hover {
@@ -497,7 +537,7 @@ html.vaultdesk-preview-document,
 .data-section-title {
 	color: var(--data-text);
 	font-size: 16px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 }
 
 .data-view-controls {
@@ -583,7 +623,7 @@ html.vaultdesk-preview-document,
 	color: var(--data-primary);
 	display: none;
 	font-size: 16px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 	gap: 10px;
 	inset: 16px;
 	justify-content: center;
@@ -615,6 +655,11 @@ html.vaultdesk-preview-document,
 		border var(--data-motion-fast),
 		box-shadow var(--data-motion-medium) var(--data-motion-ease),
 		transform var(--data-motion-medium) var(--data-motion-ease);
+}
+
+.data-card[data-action],
+.data-table tbody tr[data-action] {
+	cursor: pointer;
 }
 
 .data-card:hover {
@@ -732,7 +777,7 @@ html.vaultdesk-preview-document,
 	cursor: pointer;
 	display: block;
 	font-size: 14px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 	line-height: 1.4;
 	margin: 0 0 13px;
 	overflow: hidden;
@@ -895,7 +940,7 @@ html.vaultdesk-preview-document,
 	border-bottom: 1px solid var(--data-border);
 	color: var(--data-muted);
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	height: 44px;
 	padding: 0 14px;
 	text-align: left;
@@ -958,7 +1003,7 @@ html.vaultdesk-preview-document,
 	cursor: pointer;
 	display: flex;
 	font-size: 13px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 	gap: 12px;
 	max-width: 100%;
 	min-width: 0;
@@ -1001,6 +1046,139 @@ html.vaultdesk-preview-document,
 
 .data-table td:last-child {
 	overflow: visible;
+}
+
+.data-columns {
+	background: var(--data-panel);
+	border: 1px solid var(--data-border);
+	border-radius: 10px;
+	display: flex;
+	height: max(420px, calc(100vh - 252px));
+	min-height: 360px;
+	min-width: 0;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.data-column {
+	background: var(--data-panel);
+	border-inline-end: 1px solid var(--data-border);
+	display: flex;
+	flex: 0 0 clamp(230px, 23vw, 310px);
+	flex-direction: column;
+	min-width: 0;
+}
+
+.data-column:last-child {
+	border-inline-end: 0;
+}
+
+.data-column-header {
+	align-items: center;
+	border-bottom: 1px solid var(--data-border);
+	color: var(--data-text);
+	display: flex;
+	flex: 0 0 42px;
+	font-size: 13px;
+	font-weight: var(--weight-semibold);
+	min-width: 0;
+	overflow: hidden;
+	padding: 0 12px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.data-column-list {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	padding: 6px;
+}
+
+.data-column-item {
+	align-items: center;
+	background: transparent;
+	border: 0;
+	border-radius: 7px;
+	color: var(--data-text);
+	cursor: pointer;
+	display: grid;
+	font-size: 13px;
+	font-weight: var(--weight-medium);
+	gap: 9px;
+	grid-template-columns: 30px minmax(0, 1fr) 16px;
+	min-height: 38px;
+	padding: 4px 7px;
+	text-align: left;
+	width: 100%;
+	transition:
+		background var(--data-motion-fast),
+		color var(--data-motion-fast),
+		transform var(--data-motion-fast) var(--data-motion-ease);
+}
+
+.data-column-item:hover,
+.data-column-item.is-selected {
+	background: var(--data-primary);
+	color: #ffffff;
+}
+
+.data-column-item:hover {
+	transform: translateX(var(--data-nav-shift));
+}
+
+.data-column-item .data-file-icon {
+	border-radius: 6px;
+	height: 28px;
+	width: 28px;
+}
+
+.data-column-item .data-file-icon .data-icon {
+	height: 18px;
+	width: 18px;
+}
+
+.data-column-item:hover .data-file-icon,
+.data-column-item.is-selected .data-file-icon {
+	background: rgba(255, 255, 255, 0.18);
+	color: #ffffff;
+}
+
+.data-column-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.data-column-chevron {
+	color: currentColor;
+	height: 15px;
+	justify-self: end;
+	width: 15px;
+}
+
+.data-column-state {
+	align-items: center;
+	color: var(--data-muted);
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	justify-content: center;
+	min-height: 190px;
+	padding: 22px;
+	text-align: center;
+}
+
+.data-column-state .data-icon {
+	color: var(--data-primary);
+	height: 32px;
+	width: 32px;
+}
+
+.data-column-state p {
+	font-size: 13px;
+	line-height: 1.5;
+	margin: 0;
 }
 
 .data-row-actions > .is-starred {
@@ -1117,7 +1295,7 @@ html.vaultdesk-preview-document,
 .data-capabilities h3 {
 	color: var(--data-muted);
 	font-size: 12px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	margin: 0 0 12px;
 	text-transform: uppercase;
 }
@@ -1170,7 +1348,7 @@ html.vaultdesk-preview-document,
 .data-state h3 {
 	color: var(--data-text);
 	font-size: 17px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	margin: 0 0 7px;
 }
 
@@ -1197,7 +1375,8 @@ html.vaultdesk-preview-document,
 }
 
 .data-content-motion.is-entering .data-card,
-.data-content-motion.is-entering .data-table tbody tr {
+.data-content-motion.is-entering .data-table tbody tr,
+.data-content-motion.is-entering .data-column-item {
 	animation: data-item-enter var(--data-motion-medium) var(--data-motion-ease) both;
 	animation-delay: min(calc(var(--item-index) * 18ms), 126ms);
 }
@@ -1209,6 +1388,11 @@ html.vaultdesk-preview-document,
 .data-skeleton.is-row {
 	height: 60px;
 	margin-bottom: 7px;
+}
+
+.data-skeleton.is-column-row {
+	height: 38px;
+	margin: 0 0 7px;
 }
 
 @keyframes data-shimmer {
@@ -1263,7 +1447,7 @@ html.vaultdesk-preview-document,
 
 .data-modal header h2 {
 	font-size: 17px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	margin: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1289,7 +1473,7 @@ html.vaultdesk-preview-document,
 	display: flex;
 	flex-direction: column;
 	font-size: 12px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 	gap: 7px;
 }
 
@@ -1311,6 +1495,164 @@ html.vaultdesk-preview-document,
 	border-color: #84abf0;
 	box-shadow: 0 0 0 3px rgba(34, 101, 216, 0.11);
 	outline: none;
+}
+
+.data-modal.data-move-modal {
+	width: min(680px, 100%);
+}
+
+.data-move-browser {
+	display: flex;
+	flex-direction: column;
+	gap: 13px;
+	min-width: 0;
+}
+
+.data-move-current {
+	align-items: center;
+	background: var(--data-panel-muted);
+	border: 1px solid var(--data-border);
+	border-radius: 8px;
+	display: flex;
+	gap: 12px;
+	justify-content: space-between;
+	min-width: 0;
+	padding: 12px 14px;
+}
+
+.data-move-current span {
+	color: var(--data-muted);
+	flex: 0 0 auto;
+	font-size: 12px;
+	font-weight: var(--weight-medium);
+}
+
+.data-move-current strong {
+	color: var(--data-text);
+	font-size: 15px;
+	font-weight: var(--weight-semibold);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.data-move-breadcrumbs {
+	align-items: center;
+	color: var(--data-muted);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 7px;
+	min-width: 0;
+}
+
+.data-move-breadcrumbs button {
+	background: transparent;
+	border: 0;
+	border-radius: 6px;
+	color: var(--data-primary);
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: var(--weight-medium);
+	max-width: 180px;
+	overflow: hidden;
+	padding: 5px 6px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.data-move-breadcrumbs button:disabled {
+	color: var(--data-text);
+	cursor: default;
+}
+
+.data-move-breadcrumbs .data-icon {
+	height: 14px;
+	width: 14px;
+}
+
+.data-move-list {
+	background: var(--data-panel);
+	border: 1px solid var(--data-border);
+	border-radius: 9px;
+	max-height: 320px;
+	min-height: 190px;
+	overflow-y: auto;
+	padding: 6px;
+}
+
+.data-move-folder {
+	align-items: center;
+	background: transparent;
+	border: 0;
+	border-radius: 7px;
+	color: var(--data-text);
+	cursor: pointer;
+	display: grid;
+	font-size: 14px;
+	font-weight: var(--weight-medium);
+	gap: 12px;
+	grid-template-columns: 43px minmax(0, 1fr) 18px;
+	min-height: 58px;
+	padding: 8px 10px;
+	text-align: left;
+	width: 100%;
+	transition:
+		background var(--data-motion-fast),
+		color var(--data-motion-fast),
+		transform var(--data-motion-fast) var(--data-motion-ease);
+}
+
+.data-move-folder:hover {
+	background: #f0f5fc;
+	color: var(--data-primary);
+	transform: translateX(var(--data-nav-shift));
+}
+
+.data-move-folder span:not(.data-file-icon) {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.data-move-folder .data-file-icon {
+	height: 38px;
+	width: 38px;
+}
+
+.data-move-chevron {
+	color: var(--data-muted);
+	height: 18px;
+	width: 18px;
+}
+
+.data-move-state {
+	align-items: center;
+	border: 1px dashed var(--data-border-strong);
+	border-radius: 9px;
+	color: var(--data-muted);
+	display: flex;
+	flex-direction: column;
+	gap: 11px;
+	justify-content: center;
+	min-height: 190px;
+	padding: 24px;
+	text-align: center;
+}
+
+.data-move-state .data-icon {
+	color: var(--data-primary);
+	height: 34px;
+	width: 34px;
+}
+
+.data-move-state p {
+	font-size: 13px;
+	margin: 0;
+}
+
+.data-skeleton.is-move-row {
+	height: 58px;
+	margin-bottom: 7px;
 }
 
 .data-confirm {
@@ -1444,7 +1786,7 @@ html.vaultdesk-preview-document,
 	border-radius: 14px;
 	display: inline-flex;
 	font-size: 11px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	gap: 4px;
 	padding: 4px 8px;
 }
@@ -1641,7 +1983,7 @@ html.vaultdesk-preview-document,
 .data-preview-fallback h3 {
 	color: var(--data-text);
 	font-size: 18px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	margin: 0;
 }
 
@@ -1796,7 +2138,7 @@ html.vaultdesk-preview-document,
 	display: flex;
 	flex: 0 0 auto;
 	font-size: 14px;
-	font-weight: 650;
+	font-weight: var(--weight-semibold);
 	height: 42px;
 	justify-content: center;
 	width: 42px;
@@ -1817,7 +2159,7 @@ html.vaultdesk-preview-document,
 
 .permission-owner strong {
 	font-size: 14px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 }
 
 .permission-access-badge {
@@ -1825,7 +2167,7 @@ html.vaultdesk-preview-document,
 	border-radius: 18px;
 	color: var(--data-primary);
 	font-size: 11px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	margin-left: auto;
 	padding: 5px 10px;
 }
@@ -1841,7 +2183,7 @@ html.vaultdesk-preview-document,
 .permission-section h3 {
 	color: var(--data-text);
 	font-size: 14px;
-	font-weight: 600;
+	font-weight: var(--weight-semibold);
 	margin: 0 0 13px;
 }
 
@@ -1869,7 +2211,7 @@ html.vaultdesk-preview-document,
 	color: var(--data-muted);
 	cursor: pointer;
 	font-size: 12px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 	height: 30px;
 	padding: 0 15px;
 }
@@ -1980,7 +2322,7 @@ html.vaultdesk-preview-document,
 
 .permission-results strong {
 	font-size: 13px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 }
 
 .permission-results small {
@@ -2064,7 +2406,7 @@ html.vaultdesk-preview-document,
 .permission-principal strong {
 	display: block;
 	font-size: 13px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 	max-width: 235px;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -2126,7 +2468,7 @@ html.vaultdesk-preview-document,
 	color: var(--data-muted);
 	cursor: pointer;
 	font-size: 12px;
-	font-weight: 550;
+	font-weight: var(--weight-medium);
 	padding: 8px 4px;
 }
 
@@ -2288,7 +2630,7 @@ html.vaultdesk-preview-document,
 .vaultdesk-shell[dir="rtl"] {
 	--data-inline-shift: -9px;
 	--data-nav-shift: -3px;
-	font-family: "Noto Sans Arabic", Tahoma, "Segoe UI", Arial, sans-serif;
+	font-family: var(--font-stack);
 	text-align: right;
 }
 
@@ -2305,6 +2647,9 @@ html.vaultdesk-preview-document,
 .vaultdesk-shell[dir="rtl"] .data-card-name,
 .vaultdesk-shell[dir="rtl"] .data-menu button,
 .vaultdesk-shell[dir="rtl"] .data-context-menu button,
+.vaultdesk-shell[dir="rtl"] .data-move-folder,
+.vaultdesk-shell[dir="rtl"] .data-column-item,
+.vaultdesk-shell[dir="rtl"] .data-column-header,
 .vaultdesk-shell[dir="rtl"] .data-nav-item,
 .vaultdesk-shell[dir="rtl"] .data-table th,
 .vaultdesk-shell[dir="rtl"] .data-table-name,
@@ -2338,7 +2683,10 @@ html.vaultdesk-preview-document,
 	transform-origin: top right;
 }
 
-.vaultdesk-shell[dir="rtl"] .data-breadcrumbs .data-icon {
+.vaultdesk-shell[dir="rtl"] .data-breadcrumbs .data-icon,
+.vaultdesk-shell[dir="rtl"] .data-move-breadcrumbs .data-icon,
+.vaultdesk-shell[dir="rtl"] .data-move-chevron,
+.vaultdesk-shell[dir="rtl"] .data-column-chevron {
 	transform: rotate(180deg);
 }
 
@@ -2551,6 +2899,14 @@ html.vaultdesk-preview-document,
 		grid-template-columns: repeat(auto-fill, minmax(min(156px, 100%), 1fr));
 	}
 
+	.data-columns {
+		height: max(360px, calc(100vh - 286px));
+	}
+
+	.data-column {
+		flex-basis: min(78vw, 280px);
+	}
+
 	.data-table th:nth-child(2),
 	.data-table th:nth-child(3),
 	.data-table td:nth-child(2),
@@ -2655,6 +3011,20 @@ html.vaultdesk-preview-document,
 	.data-view-controls {
 		justify-content: flex-end;
 		width: 100%;
+	}
+
+	.data-sort {
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.data-sort select {
+		min-width: 0;
+		width: 100%;
+	}
+
+	.data-view-toggle button {
+		padding-inline: 8px;
 	}
 
 	.data-content-head {
