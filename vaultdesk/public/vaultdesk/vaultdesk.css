@@ -1,28 +1,85 @@
+/* Rubik — single UI family for Arabic + English (self-hosted variable woff2, weight axis 300-700). */
 @font-face {
 	font-display: swap;
-	font-family: "InterVariable";
+	font-family: "VaultDesk Rubik";
 	font-style: normal;
-	font-weight: 100 900;
-	src: url("./fonts/inter/InterVariable.woff2") format("woff2");
+	font-weight: 300 700;
+	src: url("./fonts/rubik/rubik-latin.woff2?v=1") format("woff2");
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
 	font-display: swap;
-	font-family: "InterVariable";
-	font-style: italic;
-	font-weight: 100 900;
-	src: url("./fonts/inter/InterVariable-Italic.woff2") format("woff2");
+	font-family: "VaultDesk Rubik";
+	font-style: normal;
+	font-weight: 300 700;
+	src: url("./fonts/rubik/rubik-latin-ext.woff2?v=1") format("woff2");
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* Arabic script uses IBM Plex Sans Arabic (self-hosted, weights 300-700).
+   Latin glyphs + all digits stay on Rubik via the latin ranges above. */
+@font-face {
+	font-display: swap;
+	font-family: "VaultDesk Plex Arabic";
+	font-style: normal;
+	font-weight: 300;
+	src: url("./fonts/ibm-plex-arabic/ibm-plex-arabic-300.woff2") format("woff2");
+	unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "VaultDesk Plex Arabic";
+	font-style: normal;
+	font-weight: 400;
+	src: url("./fonts/ibm-plex-arabic/ibm-plex-arabic-400.woff2") format("woff2");
+	unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "VaultDesk Plex Arabic";
+	font-style: normal;
+	font-weight: 500;
+	src: url("./fonts/ibm-plex-arabic/ibm-plex-arabic-500.woff2") format("woff2");
+	unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "VaultDesk Plex Arabic";
+	font-style: normal;
+	font-weight: 600;
+	src: url("./fonts/ibm-plex-arabic/ibm-plex-arabic-600.woff2") format("woff2");
+	unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+
+@font-face {
+	font-display: swap;
+	font-family: "VaultDesk Plex Arabic";
+	font-style: normal;
+	font-weight: 700;
+	src: url("./fonts/ibm-plex-arabic/ibm-plex-arabic-700.woff2") format("woff2");
+	unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+
+/* ===========================================================================
+   VaultDesk "Warm Editorial" design tokens — Terracotta on Linen.
+   Scoped to .vaultdesk-mount (NEVER :root — Frappe Desk owns :root).
+   Light is the default; the dark block below follows Desk's [data-theme="dark"]
+   or a self-managed [data-vd-theme] toggle, with a prefers-color-scheme fallback.
+   =========================================================================== */
 .vaultdesk-mount {
-	--font-stack: "InterVariable", "Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI",
-		"Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-		sans-serif;
-	--weight-regular: 420;
+	--font-stack: "VaultDesk Rubik", "VaultDesk Plex Arabic", "-apple-system", "BlinkMacSystemFont",
+		"Segoe UI", "system-ui", "Helvetica Neue", "Arial", "IBM Plex Sans Arabic", "Noto Sans Arabic",
+		"Tahoma", sans-serif;
+	--weight-light: 300;
+	--weight-regular: 400;
 	--weight-medium: 500;
 	--weight-semibold: 600;
 	--weight-bold: 700;
-	--weight-black: 800;
+	--weight-black: 700;
 	--text-tiny: 11px;
 	--text-2xs: 12px;
 	--text-xs: 12px;
@@ -34,38 +91,185 @@
 	--text-2xl: 20px;
 	--text-3xl: 24px;
 	--text-4xl: 26px;
-	--data-bg: #f5f7fb;
+	/* --- Color roles (light) --- */
+	--data-bg: #f6f2ec;
 	--data-panel: #ffffff;
-	--data-panel-muted: #f8fafc;
-	--data-border: #e2e8f0;
-	--data-border-strong: #cad5e4;
-	--data-text: #14263d;
-	--data-muted: #60718a;
-	--data-primary: #2265d8;
-	--data-primary-hover: #1854bb;
-	--data-primary-soft: #eaf2ff;
-	--data-danger: #c93b49;
-	--data-danger-soft: #fff0f2;
-	--data-success: #147d58;
-	--data-warning: #a35d00;
-	--data-shadow: 0 14px 38px rgba(27, 47, 74, 0.08);
-	--data-shadow-hover: 0 12px 30px rgba(27, 47, 74, 0.11);
+	--data-panel-muted: #fbf8f3;
+	--data-hover: #f3eee6;
+	--data-border: #e7dfd3;
+	--data-border-strong: #d6cbba;
+	--data-text: #2a2118;
+	--data-muted: #857868;
+	--data-primary: #c25a3a;
+	--data-primary-hover: #a8472b;
+	--data-primary-active: #8f3a22;
+	--data-primary-soft: #fbede6;
+	--data-on-accent: #ffffff;
+	--data-danger: #c0392b;
+	--data-danger-hover: #a32c20;
+	--data-danger-soft: #fbe9e6;
+	--data-success: #3f7d52;
+	--data-success-soft: #e9f2ea;
+	--data-warning: #b07a1e;
+	--data-warning-soft: #fbf1dc;
+	--data-star: #d9a646;
+	--data-focus-ring: rgba(194, 90, 58, 0.30);
+	--data-overlay: rgba(42, 33, 24, 0.44);
+	--data-scrim: rgba(255, 253, 249, 0.92);
+	/* file-type chips */
+	--data-type-folder-bg: #fbede6;
+	--data-type-folder-fg: #c25a3a;
+	--data-type-pdf-bg: #fbe9e6;
+	--data-type-pdf-fg: #c0392b;
+	--data-type-image-bg: #e9f2ea;
+	--data-type-image-fg: #3f7d52;
+	--data-type-text-bg: #f2ebe0;
+	--data-type-text-fg: #8a6a3f;
+	--data-type-sheet-bg: #e9f2ea;
+	--data-type-sheet-fg: #2f7350;
+	--data-type-default-bg: #f2ece2;
+	--data-type-default-fg: #857868;
+	/* toast (fixed dark surface in both themes) */
+	--data-toast-bg: #2a2118;
+	--data-toast-fg: #f7f2ea;
+	--data-toast-success: #6fb585;
+	--data-toast-warning: #e6b35a;
+	--data-toast-danger: #ec918a;
+	/* skeleton shimmer (warm) */
+	--data-skeleton-a: #efe7db;
+	--data-skeleton-b: #faf6ef;
+	/* --- Radii (rounder, premium) --- */
+	--radius-xs: 6px;
+	--radius-sm: 8px;
+	--radius-md: 10px;
+	--radius-lg: 14px;
+	--radius-xl: 16px;
+	--radius-pill: 999px;
+	/* --- Shadows (warm-tinted espresso ink, low-contrast) --- */
+	--shadow-sm: 0 1px 2px rgba(58, 42, 28, 0.08);
+	--data-shadow: 0 12px 32px rgba(58, 42, 28, 0.08);
+	--data-shadow-hover: 0 14px 36px rgba(58, 42, 28, 0.12);
+	--data-shadow-menu: 0 12px 30px rgba(58, 42, 28, 0.14);
+	--data-shadow-modal: 0 20px 56px rgba(31, 22, 14, 0.22);
+	--data-shadow-pop: 0 7px 16px rgba(194, 90, 58, 0.24);
+	/* --- Motion --- */
 	--data-motion-fast: 140ms;
 	--data-motion-medium: 220ms;
 	--data-motion-slow: 300ms;
+	--data-motion-exit: 180ms;
 	--data-motion-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 	--data-motion-pop: cubic-bezier(0.18, 0.89, 0.32, 1.18);
+	--data-motion-exit-ease: cubic-bezier(0.4, 0, 1, 1);
 	--data-inline-shift: 9px;
 	--data-nav-shift: 3px;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
 	color: var(--data-text);
 	font-family: var(--font-stack);
-	font-optical-sizing: auto;
-	font-variation-settings: "opsz" 24;
 	font-weight: var(--weight-regular);
 	margin: -15px -15px 0;
 	min-width: 0;
+}
+
+/* ===========================  DARK  ======================================= */
+/* Follows Frappe Desk's html[data-theme="dark"] OR a self toggle on the mount.
+   Elevation in dark = lifted surface tone + brighter border; shadows deepen. */
+html[data-theme="dark"] .vaultdesk-mount,
+.vaultdesk-mount[data-vd-theme="dark"] {
+	--data-bg: #1c1714;
+	--data-panel: #26201b;
+	--data-panel-muted: #2e2720;
+	--data-hover: #322a23;
+	--data-border: #3a322b;
+	--data-border-strong: #4c4239;
+	--data-text: #f2ebe1;
+	--data-muted: #a89a89;
+	--data-primary: #e4805e;
+	--data-primary-hover: #f09a7b;
+	--data-primary-active: #f5a98c;
+	--data-primary-soft: #3a2a22;
+	--data-on-accent: #2a1b14;
+	--data-danger: #e07567;
+	--data-danger-hover: #ef8a7c;
+	--data-danger-soft: #3a2421;
+	--data-success: #6fb585;
+	--data-success-soft: #23332a;
+	--data-warning: #d9a646;
+	--data-warning-soft: #352b1a;
+	--data-star: #f0bc5b;
+	--data-focus-ring: rgba(228, 128, 94, 0.42);
+	--data-overlay: rgba(10, 7, 5, 0.62);
+	--data-scrim: rgba(28, 23, 20, 0.90);
+	--data-type-folder-bg: #3a2a22;
+	--data-type-folder-fg: #e4805e;
+	--data-type-pdf-bg: #3a2421;
+	--data-type-pdf-fg: #e07567;
+	--data-type-image-bg: #23332a;
+	--data-type-image-fg: #6fb585;
+	--data-type-text-bg: #332a20;
+	--data-type-text-fg: #c79b6a;
+	--data-type-sheet-bg: #23332a;
+	--data-type-sheet-fg: #6fb585;
+	--data-type-default-bg: #2e2720;
+	--data-type-default-fg: #a89a89;
+	--data-skeleton-a: #2a241e;
+	--data-skeleton-b: #352e27;
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.40);
+	--data-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+	--data-shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.50);
+	--data-shadow-menu: 0 14px 34px rgba(0, 0, 0, 0.52);
+	--data-shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.62);
+	--data-shadow-pop: 0 7px 18px rgba(0, 0, 0, 0.55);
+}
+
+/* OS preference fallback — only when neither Desk nor VaultDesk has pinned light. */
+@media (prefers-color-scheme: dark) {
+	html:not([data-theme="light"]) .vaultdesk-mount:not([data-vd-theme="light"]) {
+		--data-bg: #1c1714;
+		--data-panel: #26201b;
+		--data-panel-muted: #2e2720;
+		--data-hover: #322a23;
+		--data-border: #3a322b;
+		--data-border-strong: #4c4239;
+		--data-text: #f2ebe1;
+		--data-muted: #a89a89;
+		--data-primary: #e4805e;
+		--data-primary-hover: #f09a7b;
+		--data-primary-active: #f5a98c;
+		--data-primary-soft: #3a2a22;
+		--data-on-accent: #2a1b14;
+		--data-danger: #e07567;
+		--data-danger-hover: #ef8a7c;
+		--data-danger-soft: #3a2421;
+		--data-success: #6fb585;
+		--data-success-soft: #23332a;
+		--data-warning: #d9a646;
+		--data-warning-soft: #352b1a;
+		--data-star: #f0bc5b;
+		--data-focus-ring: rgba(228, 128, 94, 0.42);
+		--data-overlay: rgba(10, 7, 5, 0.62);
+		--data-scrim: rgba(28, 23, 20, 0.90);
+		--data-type-folder-bg: #3a2a22;
+		--data-type-folder-fg: #e4805e;
+		--data-type-pdf-bg: #3a2421;
+		--data-type-pdf-fg: #e07567;
+		--data-type-image-bg: #23332a;
+		--data-type-image-fg: #6fb585;
+		--data-type-text-bg: #332a20;
+		--data-type-text-fg: #c79b6a;
+		--data-type-sheet-bg: #23332a;
+		--data-type-sheet-fg: #6fb585;
+		--data-type-default-bg: #2e2720;
+		--data-type-default-fg: #a89a89;
+		--data-skeleton-a: #2a241e;
+		--data-skeleton-b: #352e27;
+		--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.40);
+		--data-shadow: 0 14px 34px rgba(0, 0, 0, 0.42);
+		--data-shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.50);
+		--data-shadow-menu: 0 14px 34px rgba(0, 0, 0, 0.52);
+		--data-shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.62);
+		--data-shadow-pop: 0 7px 18px rgba(0, 0, 0, 0.55);
+	}
 }
 
 html.vaultdesk-preview-document,
@@ -152,10 +356,11 @@ html.vaultdesk-preview-document,
 }
 
 .vaultdesk-shell {
+	accent-color: var(--data-primary);
 	animation: data-shell-enter var(--data-motion-slow) var(--data-motion-ease) both;
 	background: var(--data-bg);
 	border: 1px solid var(--data-border);
-	border-radius: 12px;
+	border-radius: var(--radius-lg);
 	display: flex;
 	flex-direction: column;
 	height: min(900px, calc(100vh - 126px));
@@ -172,7 +377,7 @@ html.vaultdesk-preview-document,
 	stroke: currentColor;
 	stroke-linecap: round;
 	stroke-linejoin: round;
-	stroke-width: 2;
+	stroke-width: 1.75;
 	width: 20px;
 }
 
@@ -205,7 +410,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-mode-badge {
-	background: #eaf7f1;
+	background: var(--data-success-soft);
 	border-radius: 20px;
 	color: var(--data-success);
 	font-size: 11px;
@@ -216,13 +421,13 @@ html.vaultdesk-preview-document,
 }
 
 .data-mode-badge.is-mock {
-	background: #fff3dc;
-	color: #94610b;
+	background: var(--data-warning-soft);
+	color: var(--data-warning);
 }
 
 .data-search {
 	align-items: center;
-	background: #f1f5fa;
+	background: var(--data-panel-muted);
 	border: 1px solid transparent;
 	border-radius: 10px;
 	color: var(--data-muted);
@@ -241,8 +446,8 @@ html.vaultdesk-preview-document,
 
 .data-search:focus-within {
 	background: var(--data-panel);
-	border-color: #9bbcf5;
-	box-shadow: 0 0 0 3px rgba(34, 101, 216, 0.1);
+	border-color: var(--data-primary);
+	box-shadow: 0 0 0 3px var(--data-focus-ring);
 	transform: translateY(-1px);
 }
 
@@ -256,7 +461,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-search input::placeholder {
-	color: #73839a;
+	color: var(--data-muted);
 }
 
 .data-header-actions {
@@ -284,8 +489,8 @@ html.vaultdesk-preview-document,
 }
 
 .data-language select:focus {
-	border-color: #84abf0;
-	box-shadow: 0 0 0 3px rgba(34, 101, 216, 0.11);
+	border-color: var(--data-primary);
+	box-shadow: 0 0 0 3px var(--data-focus-ring);
 	outline: none;
 }
 
@@ -327,13 +532,17 @@ html.vaultdesk-preview-document,
 
 .data-btn-primary {
 	background: var(--data-primary);
-	color: #fff;
+	color: var(--data-on-accent);
 }
 
 .data-btn-primary:not(:disabled):hover {
 	background: var(--data-primary-hover);
-	box-shadow: 0 7px 16px rgba(34, 101, 216, 0.22);
+	box-shadow: var(--data-shadow-pop);
 	transform: translateY(-1px);
+}
+
+.data-btn-primary:not(:disabled):active {
+	background: var(--data-primary-active);
 }
 
 .data-btn-secondary {
@@ -344,17 +553,33 @@ html.vaultdesk-preview-document,
 
 .data-btn-secondary:not(:disabled):hover {
 	background: var(--data-panel-muted);
-	border-color: #acbbd1;
+	border-color: var(--data-border-strong);
 	transform: translateY(-1px);
 }
 
 .data-btn-danger {
 	background: var(--data-danger);
-	color: #fff;
+	color: var(--data-on-accent);
 }
 
 .data-btn-danger:hover {
-	background: #ae2938;
+	background: var(--data-danger-hover);
+}
+
+.data-theme-toggle {
+	flex: 0 0 auto;
+	padding: 0;
+	width: 40px;
+}
+
+.data-theme-toggle .data-icon {
+	height: 18px;
+	transition: transform var(--data-motion-medium) var(--data-motion-pop);
+	width: 18px;
+}
+
+.data-theme-toggle:hover .data-icon {
+	transform: rotate(-18deg);
 }
 
 .data-layout {
@@ -408,7 +633,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-nav-item:hover {
-	background: #f2f6fb;
+	background: var(--data-hover);
 	color: var(--data-text);
 	transform: translateX(var(--data-nav-shift));
 }
@@ -457,7 +682,7 @@ html.vaultdesk-preview-document,
 
 .data-tree-node button:hover,
 .data-tree-node button.is-current {
-	background: #f1f6ff;
+	background: var(--data-hover);
 	color: var(--data-primary);
 	transform: translateX(var(--data-nav-shift));
 }
@@ -529,7 +754,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-breadcrumbs button:hover {
-	background: #eef3fa;
+	background: var(--data-hover);
 	color: var(--data-primary);
 	transform: translateY(-1px);
 }
@@ -568,10 +793,28 @@ html.vaultdesk-preview-document,
 }
 
 .data-view-toggle {
-	background: #eef2f8;
+	background: var(--data-panel-muted);
 	border-radius: 8px;
 	display: flex;
 	padding: 3px;
+	position: relative;
+}
+
+/* Sliding pill that travels from the previous view button to the newly active one. */
+.data-view-toggle-indicator {
+	background: var(--data-panel);
+	border-radius: 6px;
+	box-shadow: var(--shadow-sm);
+	height: 32px;
+	left: 0;
+	pointer-events: none;
+	position: absolute;
+	top: 3px;
+	transition:
+		transform var(--data-motion-medium) var(--data-motion-pop),
+		width var(--data-motion-medium) var(--data-motion-pop);
+	width: 0;
+	z-index: 0;
 }
 
 .data-view-toggle button {
@@ -582,18 +825,47 @@ html.vaultdesk-preview-document,
 	cursor: pointer;
 	height: 32px;
 	padding: 6px 9px;
+	position: relative;
+	z-index: 1;
 	transition:
-		background var(--data-motion-fast),
-		box-shadow var(--data-motion-fast),
 		color var(--data-motion-fast),
 		transform var(--data-motion-fast) var(--data-motion-ease);
 }
 
 .data-view-toggle button.is-active {
-	background: var(--data-panel);
-	box-shadow: 0 1px 3px rgba(31, 45, 67, 0.14);
 	color: var(--data-primary);
-	transform: scale(1.03);
+}
+
+/* When a view becomes active, the parts INSIDE its icon react for ~0.5s. */
+.data-view-toggle button .data-icon rect,
+.data-view-toggle button .data-icon path {
+	transform-box: fill-box;
+	transform-origin: center;
+}
+
+.data-view-toggle button.is-anim .lucide-grid rect {
+	animation: icon-grid-vibrate 0.5s var(--data-motion-ease) both;
+}
+.data-view-toggle button.is-anim .lucide-grid rect:nth-child(1) { animation-delay: 0ms; }
+.data-view-toggle button.is-anim .lucide-grid rect:nth-child(2) { animation-delay: 70ms; }
+.data-view-toggle button.is-anim .lucide-grid rect:nth-child(3) { animation-delay: 130ms; }
+.data-view-toggle button.is-anim .lucide-grid rect:nth-child(4) { animation-delay: 40ms; }
+
+.data-view-toggle button.is-anim .lucide-list path {
+	animation: icon-list-shuffle 0.5s var(--data-motion-ease) both;
+}
+.data-view-toggle button.is-anim .lucide-list path:nth-child(1),
+.data-view-toggle button.is-anim .lucide-list path:nth-child(4) { --row-shift: 6px; animation-delay: 0ms; }
+.data-view-toggle button.is-anim .lucide-list path:nth-child(2),
+.data-view-toggle button.is-anim .lucide-list path:nth-child(5) { --row-shift: 0px; animation-delay: 70ms; }
+.data-view-toggle button.is-anim .lucide-list path:nth-child(3),
+.data-view-toggle button.is-anim .lucide-list path:nth-child(6) { --row-shift: -6px; animation-delay: 0ms; }
+
+.data-view-toggle button.is-anim .lucide-columns path:nth-child(2) {
+	animation: icon-col-top 0.5s var(--data-motion-ease) both;
+}
+.data-view-toggle button.is-anim .lucide-columns path:nth-child(3) {
+	animation: icon-col-bottom 0.5s var(--data-motion-ease) both;
 }
 
 .data-drop-surface {
@@ -608,17 +880,17 @@ html.vaultdesk-preview-document,
 }
 
 .data-drop-surface.is-dragging {
-	background: #edf4ff;
+	background: var(--data-primary-soft);
 }
 
 .data-drop-surface.is-context-target {
-	background: #f1f6ff;
+	background: var(--data-hover);
 }
 
 .data-drop-prompt {
 	align-items: center;
-	background: rgba(255, 255, 255, 0.96);
-	border: 2px dashed #76a1ed;
+	background: var(--data-scrim);
+	border: 2px dashed var(--data-primary);
 	border-radius: 14px;
 	color: var(--data-primary);
 	display: none;
@@ -646,7 +918,7 @@ html.vaultdesk-preview-document,
 .data-card {
 	background: var(--data-panel);
 	border: 1px solid var(--data-border);
-	border-radius: 11px;
+	border-radius: var(--radius-lg);
 	min-height: 164px;
 	padding: 15px;
 	position: relative;
@@ -663,15 +935,15 @@ html.vaultdesk-preview-document,
 }
 
 .data-card:hover {
-	border-color: #c5d4e9;
+	border-color: var(--data-border-strong);
 	box-shadow: var(--data-shadow-hover);
 	transform: translateY(-3px);
 }
 
 .data-card.is-selected {
-	background: #fbfdff;
-	border-color: #85aef4;
-	box-shadow: 0 0 0 2px rgba(34, 101, 216, 0.12);
+	background: var(--data-panel);
+	border-color: var(--data-primary);
+	box-shadow: 0 0 0 2px var(--data-focus-ring);
 }
 
 .data-card:active {
@@ -681,7 +953,7 @@ html.vaultdesk-preview-document,
 .data-card.is-context-target,
 .data-table tr.is-context-target {
 	animation: data-context-target var(--data-motion-medium) var(--data-motion-ease);
-	background: #eef5ff;
+	background: var(--data-primary-soft);
 }
 
 .data-card-header {
@@ -692,8 +964,8 @@ html.vaultdesk-preview-document,
 }
 
 .data-card-header .is-starred {
-	color: #f2a914;
-	fill: #f2a914;
+	color: var(--data-star);
+	fill: var(--data-star);
 	height: 16px;
 	margin-left: auto;
 	width: 16px;
@@ -701,13 +973,16 @@ html.vaultdesk-preview-document,
 
 .data-file-icon {
 	align-items: center;
-	background: #edf2f8;
-	border-radius: 9px;
-	color: #56718e;
+	background: var(--data-type-default-bg);
+	border-radius: 11px;
+	color: var(--data-type-default-fg);
 	display: inline-flex;
 	height: 43px;
 	justify-content: center;
 	width: 43px;
+	transition:
+		background var(--data-motion-fast),
+		color var(--data-motion-fast);
 }
 
 .data-file-icon .data-icon {
@@ -716,28 +991,28 @@ html.vaultdesk-preview-document,
 }
 
 .data-file-icon.is-folder {
-	background: #e9f1ff;
-	color: #3273db;
+	background: var(--data-type-folder-bg);
+	color: var(--data-type-folder-fg);
 }
 
 .data-file-icon.is-pdf {
-	background: #fff0f0;
-	color: #cc3c4a;
+	background: var(--data-type-pdf-bg);
+	color: var(--data-type-pdf-fg);
 }
 
 .data-file-icon.is-image {
-	background: #eef9f3;
-	color: #128058;
+	background: var(--data-type-image-bg);
+	color: var(--data-type-image-fg);
 }
 
 .data-file-icon.is-text {
-	background: #f1efff;
-	color: #644cc6;
+	background: var(--data-type-text-bg);
+	color: var(--data-type-text-fg);
 }
 
 .data-file-icon.is-sheet {
-	background: #eaf7f1;
-	color: #188354;
+	background: var(--data-type-sheet-bg);
+	color: var(--data-type-sheet-fg);
 }
 
 .data-icon-btn {
@@ -758,7 +1033,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-icon-btn:hover {
-	background: #f0f4fa;
+	background: var(--data-hover);
 	color: var(--data-text);
 }
 
@@ -845,7 +1120,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-menu button:hover {
-	background: #f0f5fc;
+	background: var(--data-hover);
 	color: var(--data-primary);
 	transform: translateX(var(--data-nav-shift));
 }
@@ -896,13 +1171,13 @@ html.vaultdesk-preview-document,
 }
 
 .data-context-menu button:hover:not(:disabled) {
-	background: #f0f5fc;
+	background: var(--data-hover);
 	color: var(--data-primary);
 	transform: translateX(var(--data-nav-shift));
 }
 
 .data-context-menu button:disabled {
-	color: #a2afc1;
+	color: var(--data-muted);
 	cursor: not-allowed;
 	opacity: 0.72;
 }
@@ -947,7 +1222,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-table td {
-	border-bottom: 1px solid #edf1f6;
+	border-bottom: 1px solid var(--data-border);
 	color: var(--data-text);
 	font-size: 13px;
 	height: 61px;
@@ -968,7 +1243,7 @@ html.vaultdesk-preview-document,
 
 .data-table tbody tr:hover,
 .data-table tbody tr.is-selected {
-	background: #f5f9ff;
+	background: var(--data-hover);
 }
 
 .data-table th:first-child {
@@ -1120,7 +1395,7 @@ html.vaultdesk-preview-document,
 .data-column-item:hover,
 .data-column-item.is-selected {
 	background: var(--data-primary);
-	color: #ffffff;
+	color: var(--data-on-accent);
 }
 
 .data-column-item:hover {
@@ -1141,7 +1416,7 @@ html.vaultdesk-preview-document,
 .data-column-item:hover .data-file-icon,
 .data-column-item.is-selected .data-file-icon {
 	background: rgba(255, 255, 255, 0.18);
-	color: #ffffff;
+	color: var(--data-on-accent);
 }
 
 .data-column-label {
@@ -1182,8 +1457,8 @@ html.vaultdesk-preview-document,
 }
 
 .data-row-actions > .is-starred {
-	color: #f2a914;
-	fill: #f2a914;
+	color: var(--data-star);
+	fill: var(--data-star);
 	height: 16px;
 	width: 16px;
 }
@@ -1217,7 +1492,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-details-empty .data-icon {
-	background: #f0f4fa;
+	background: var(--data-hover);
 	border-radius: 50%;
 	height: 50px;
 	margin-bottom: 18px;
@@ -1307,7 +1582,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-capabilities span {
-	background: #eef4ff;
+	background: var(--data-primary-soft);
 	border-radius: 20px;
 	color: var(--data-primary);
 	font-size: 11px;
@@ -1332,7 +1607,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-state .data-state-icon {
-	background: #eaf1fd;
+	background: var(--data-primary-soft);
 	border-radius: 50%;
 	color: var(--data-primary);
 	height: 62px;
@@ -1360,7 +1635,7 @@ html.vaultdesk-preview-document,
 
 .data-skeleton {
 	animation: data-shimmer 1.3s infinite linear;
-	background: linear-gradient(100deg, #eef2f7 20%, #f7f9fc 42%, #eef2f7 64%);
+	background: linear-gradient(100deg, var(--data-skeleton-a) 20%, var(--data-skeleton-b) 42%, var(--data-skeleton-a) 64%);
 	background-size: 220% 100%;
 	border-radius: 10px;
 }
@@ -1401,7 +1676,9 @@ html.vaultdesk-preview-document,
 
 .data-modal-backdrop {
 	align-items: center;
-	background: rgba(17, 29, 47, 0.46);
+	-webkit-backdrop-filter: blur(3px);
+	backdrop-filter: blur(3px);
+	background: var(--data-overlay);
 	display: flex;
 	inset: 0;
 	justify-content: center;
@@ -1419,18 +1696,18 @@ html.vaultdesk-preview-document,
 }
 
 [data-region="modal"].is-closing .data-modal-backdrop {
-	animation: data-backdrop-out 180ms var(--data-motion-ease) both;
+	animation: data-backdrop-out var(--data-motion-exit) var(--data-motion-exit-ease) both;
 	pointer-events: none;
 }
 
 [data-region="modal"].is-closing .data-modal {
-	animation: data-modal-out 180ms var(--data-motion-ease) both;
+	animation: data-modal-out var(--data-motion-exit) var(--data-motion-exit-ease) both;
 }
 
 .data-modal {
 	background: var(--data-panel);
-	border-radius: 13px;
-	box-shadow: 0 18px 54px rgba(16, 25, 39, 0.2);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--data-shadow-modal);
 	max-height: min(86vh, 760px);
 	overflow: hidden;
 	width: min(560px, 100%);
@@ -1492,8 +1769,8 @@ html.vaultdesk-preview-document,
 
 .data-field input:focus,
 .data-field select:focus {
-	border-color: #84abf0;
-	box-shadow: 0 0 0 3px rgba(34, 101, 216, 0.11);
+	border-color: var(--data-primary);
+	box-shadow: 0 0 0 3px var(--data-focus-ring);
 	outline: none;
 }
 
@@ -1603,7 +1880,7 @@ html.vaultdesk-preview-document,
 }
 
 .data-move-folder:hover {
-	background: #f0f5fc;
+	background: var(--data-hover);
 	color: var(--data-primary);
 	transform: translateX(var(--data-nav-shift));
 }
@@ -1696,8 +1973,8 @@ html.vaultdesk-preview-document,
 
 .version-policy {
 	align-items: flex-start;
-	background: #f2f7ff;
-	border: 1px solid #d6e4fc;
+	background: var(--data-primary-soft);
+	border: 1px solid var(--data-border-strong);
 	border-radius: 10px;
 	color: var(--data-muted);
 	display: flex;
@@ -1744,8 +2021,8 @@ html.vaultdesk-preview-document,
 }
 
 .version-row.is-current {
-	background: #fbfdff;
-	border-color: #c9dcfb;
+	background: var(--data-panel);
+	border-color: var(--data-border-strong);
 }
 
 .data-version-modal .version-row.is-highlighted {
@@ -1797,14 +2074,14 @@ html.vaultdesk-preview-document,
 }
 
 .version-badge.is-current {
-	background: #eaf7f1;
+	background: var(--data-success-soft);
 	color: var(--data-success);
 	transition: transform var(--data-motion-medium), box-shadow var(--data-motion-medium);
 }
 
 .version-badge.is-protected {
-	background: #fff3dc;
-	color: #94610b;
+	background: var(--data-warning-soft);
+	color: var(--data-warning);
 }
 
 .version-actions {
@@ -1835,7 +2112,7 @@ html.vaultdesk-preview-document,
 }
 
 .version-upload-status i {
-	background: #dfebff;
+	background: var(--data-primary-soft);
 	border-radius: 4px;
 	bottom: -7px;
 	height: 3px;
@@ -1857,7 +2134,7 @@ html.vaultdesk-preview-document,
 
 .data-preview {
 	align-items: center;
-	background: #f2f5fa;
+	background: var(--data-panel-muted);
 	border-radius: 9px;
 	display: flex;
 	justify-content: center;
@@ -1928,7 +2205,7 @@ html.vaultdesk-preview-document,
 
 .preview-navigate {
 	align-self: center;
-	background: #fff;
+	background: var(--data-panel);
 	border: 1px solid var(--data-border);
 	border-radius: 50%;
 	color: var(--data-muted);
@@ -1942,7 +2219,7 @@ html.vaultdesk-preview-document,
 }
 
 .preview-navigate:hover:not(:disabled) {
-	border-color: #afc7eb;
+	border-color: var(--data-border-strong);
 	color: var(--data-primary);
 	transform: scale(1.06);
 }
@@ -1998,7 +2275,7 @@ html.vaultdesk-preview-document,
 
 .data-spinner {
 	animation: preview-spin 0.8s linear infinite;
-	border: 3px solid #d8e4f5;
+	border: 3px solid var(--data-border);
 	border-radius: 50%;
 	border-top-color: var(--data-primary);
 	height: 38px;
@@ -2034,8 +2311,8 @@ html.vaultdesk-preview-document,
 }
 
 .data-preview-text {
-	background: #fff;
-	color: #24374e;
+	background: var(--data-panel);
+	color: var(--data-text);
 	flex: 1;
 	font: 13px/1.7 "SFMono-Regular", Consolas, monospace;
 	margin: 0;
@@ -2046,9 +2323,9 @@ html.vaultdesk-preview-document,
 }
 
 .preview-truncated {
-	background: #fff6e2;
-	border-top: 1px solid #ecd9a9;
-	color: #755819;
+	background: var(--data-warning-soft);
+	border-top: 1px solid var(--data-border);
+	color: var(--data-warning);
 	font-size: 12px;
 	margin: 0;
 	padding: 10px 17px;
@@ -2093,7 +2370,7 @@ html.vaultdesk-preview-document,
 }
 
 .preview-details dl div {
-	border-bottom: 1px solid #edf1f6;
+	border-bottom: 1px solid var(--data-border);
 	margin-bottom: 12px;
 	padding-bottom: 12px;
 }
@@ -2122,7 +2399,7 @@ html.vaultdesk-preview-document,
 
 .permission-owner {
 	align-items: center;
-	background: #f5f8fd;
+	background: var(--data-panel-muted);
 	border: 1px solid var(--data-border);
 	border-radius: 10px;
 	display: flex;
@@ -2132,7 +2409,7 @@ html.vaultdesk-preview-document,
 
 .permission-avatar {
 	align-items: center;
-	background: #deebff;
+	background: var(--data-primary-soft);
 	border-radius: 50%;
 	color: var(--data-primary);
 	display: flex;
@@ -2188,7 +2465,7 @@ html.vaultdesk-preview-document,
 }
 
 .permission-section h3 span {
-	background: #eef2f8;
+	background: var(--data-panel-muted);
 	border-radius: 14px;
 	color: var(--data-muted);
 	font-size: 11px;
@@ -2197,7 +2474,7 @@ html.vaultdesk-preview-document,
 }
 
 .permission-type-switch {
-	background: #eef2f8;
+	background: var(--data-panel-muted);
 	border-radius: 7px;
 	display: inline-flex;
 	margin-bottom: 13px;
@@ -2217,8 +2494,8 @@ html.vaultdesk-preview-document,
 }
 
 .permission-type-switch button.is-active {
-	background: #fff;
-	box-shadow: 0 1px 3px rgba(31, 45, 67, 0.12);
+	background: var(--data-panel);
+	box-shadow: var(--shadow-sm);
 	color: var(--data-primary);
 }
 
@@ -2239,8 +2516,8 @@ html.vaultdesk-preview-document,
 }
 
 .permission-search:focus-within {
-	border-color: #84abf0;
-	box-shadow: 0 0 0 3px rgba(34, 101, 216, 0.11);
+	border-color: var(--data-primary);
+	box-shadow: 0 0 0 3px var(--data-focus-ring);
 }
 
 .permission-search .data-icon {
@@ -2294,7 +2571,7 @@ html.vaultdesk-preview-document,
 	align-items: center;
 	background: var(--data-panel);
 	border: 0;
-	border-bottom: 1px solid #edf1f6;
+	border-bottom: 1px solid var(--data-border);
 	color: var(--data-text);
 	cursor: pointer;
 	display: flex;
@@ -2307,7 +2584,7 @@ html.vaultdesk-preview-document,
 }
 
 .permission-results button:hover {
-	background: #f3f7fd;
+	background: var(--data-hover);
 }
 
 .permission-results button:last-child {
@@ -2333,7 +2610,7 @@ html.vaultdesk-preview-document,
 
 .permission-selection {
 	align-items: center;
-	background: #f3f7ff;
+	background: var(--data-primary-soft);
 	border-radius: 7px;
 	color: var(--data-primary);
 	display: inline-flex;
@@ -2384,7 +2661,7 @@ html.vaultdesk-preview-document,
 
 .permission-grant {
 	align-items: center;
-	border-bottom: 1px solid #edf1f6;
+	border-bottom: 1px solid var(--data-border);
 	display: flex;
 	gap: 12px;
 	justify-content: space-between;
@@ -2423,14 +2700,14 @@ html.vaultdesk-preview-document,
 }
 
 .permission-scope {
-	background: #eaf2ff;
+	background: var(--data-primary-soft);
 	border-radius: 10px;
 	color: var(--data-primary);
 	padding: 2px 7px;
 }
 
 .permission-scope.is-inherited {
-	background: #eef2f6;
+	background: var(--data-panel-muted);
 	color: var(--data-muted);
 }
 
@@ -2447,7 +2724,7 @@ html.vaultdesk-preview-document,
 }
 
 .permission-grant-actions select:disabled {
-	background: #f4f6f9;
+	background: var(--data-panel-muted);
 	color: var(--data-muted);
 }
 
@@ -2489,10 +2766,10 @@ html.vaultdesk-preview-document,
 .data-toast {
 	animation: data-toast-in var(--data-motion-medium) var(--data-motion-pop) both;
 	align-items: center;
-	background: #15283f;
-	border-radius: 8px;
-	box-shadow: var(--data-shadow);
-	color: #fff;
+	background: var(--data-toast-bg);
+	border-radius: 10px;
+	box-shadow: var(--data-shadow-menu);
+	color: var(--data-toast-fg);
 	display: flex;
 	font-size: 13px;
 	gap: 9px;
@@ -2501,19 +2778,19 @@ html.vaultdesk-preview-document,
 }
 
 .data-toast.is-leaving {
-	animation: data-toast-out 180ms var(--data-motion-ease) both;
+	animation: data-toast-out var(--data-motion-exit) var(--data-motion-exit-ease) both;
 }
 
 .data-toast.is-success .data-icon {
-	color: #57d39b;
+	color: var(--data-toast-success);
 }
 
 .data-toast.is-warning .data-icon {
-	color: #ffbf52;
+	color: var(--data-toast-warning);
 }
 
 .data-toast.is-error .data-icon {
-	color: #ff8690;
+	color: var(--data-toast-danger);
 }
 
 @keyframes data-shell-enter {
@@ -2541,6 +2818,36 @@ html.vaultdesk-preview-document,
 	to { opacity: 1; transform: none; }
 }
 
+/* Each square of the grid icon jitters left/right on its own. */
+@keyframes icon-grid-vibrate {
+	0%, 100% { transform: translateX(0); }
+	14% { transform: translateX(-2.4px); }
+	30% { transform: translateX(2.4px); }
+	46% { transform: translateX(-1.8px); }
+	62% { transform: translateX(1.8px); }
+	78% { transform: translateX(-1px); }
+	90% { transform: translateX(1px); }
+}
+
+/* List icon rows slide out of order and settle back (reshuffle). */
+@keyframes icon-list-shuffle {
+	0% { transform: translateY(0); }
+	38% { transform: translateY(var(--row-shift, 0)); }
+	70% { transform: translateY(0); }
+	100% { transform: translateY(0); }
+}
+
+/* Columns icon dividers vanish, then enter from top / bottom. */
+@keyframes icon-col-top {
+	0%, 42% { opacity: 0; transform: translateY(-7px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes icon-col-bottom {
+	0%, 42% { opacity: 0; transform: translateY(7px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes data-item-enter {
 	from { opacity: 0; transform: translateY(7px); }
 	to { opacity: 1; transform: none; }
@@ -2562,8 +2869,8 @@ html.vaultdesk-preview-document,
 }
 
 @keyframes data-context-target {
-	0% { box-shadow: 0 0 0 0 rgba(34, 101, 216, 0.18); }
-	100% { box-shadow: 0 0 0 2px rgba(34, 101, 216, 0.1); }
+	0% { box-shadow: 0 0 0 0 var(--data-focus-ring); }
+	100% { box-shadow: 0 0 0 2px var(--data-focus-ring); }
 }
 
 @keyframes data-empty-settle {
@@ -2597,8 +2904,8 @@ html.vaultdesk-preview-document,
 }
 
 @keyframes data-success-highlight {
-	0% { background: #edf9f4; border-color: #91d4b6; box-shadow: 0 0 0 2px rgba(20, 125, 88, 0.1); }
-	100% { background: #fbfdff; border-color: #c9dcfb; box-shadow: none; }
+	0% { background: var(--data-success-soft); border-color: var(--data-success); box-shadow: 0 0 0 2px rgba(20, 125, 88, 0.1); }
+	100% { background: var(--data-panel); border-color: var(--data-border-strong); box-shadow: none; }
 }
 
 @keyframes data-badge-emphasis {
@@ -2739,7 +3046,7 @@ html.vaultdesk-preview-document,
 	}
 
 	.data-details {
-		box-shadow: -12px 0 34px rgba(21, 36, 57, 0.16);
+		box-shadow: -12px 0 34px rgba(31, 22, 14, 0.18);
 		display: block;
 		height: auto;
 		inset-block: 0;
@@ -2766,7 +3073,7 @@ html.vaultdesk-preview-document,
 	}
 
 	.vaultdesk-shell[dir="rtl"] .data-details {
-		box-shadow: 12px 0 34px rgba(21, 36, 57, 0.16);
+		box-shadow: 12px 0 34px rgba(31, 22, 14, 0.18);
 		transform: translateX(calc(-100% - 1px));
 	}
 
@@ -3061,6 +3368,7 @@ html.vaultdesk-preview-document,
 	.vaultdesk-shell *::before,
 	.vaultdesk-shell *::after {
 		animation-duration: 1ms !important;
+		animation-delay: 0ms !important;
 		animation-iteration-count: 1 !important;
 		scroll-behavior: auto !important;
 		transition-duration: 1ms !important;

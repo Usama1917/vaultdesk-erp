@@ -40,6 +40,7 @@ class VaultDeskApp {
 		this.element = element;
 		const mode = options.apiMode === "live" ? "live" : "mock";
 		const savedView = normalizeView(window.localStorage.getItem("vaultdesk-view"));
+		this.theme = normalizeTheme(window.localStorage.getItem("vaultdesk-theme"));
 		this.i18n = createI18n(options.language || detectInitialLanguage(mode));
 		this.api = options.api || (mode === "live"
 			? new LiveVaultDeskApi(this.i18n)
@@ -69,6 +70,10 @@ class VaultDeskApp {
 
 	async initialize() {
 		this.element.innerHTML = renderShell(this.api.mode, this.i18n);
+		// Carry language + direction on the VaultDesk mount in BOTH modes so RTL/LTR
+		// styling applies inside Frappe Desk without mutating the host document.
+		this.element.lang = this.i18n.language;
+		this.element.dir = this.i18n.dir;
 		if (this.api.mode === "mock") {
 			document.title = this.i18n.t("app.local_preview_title");
 			document.documentElement.lang = this.i18n.language;
@@ -86,6 +91,7 @@ class VaultDeskApp {
 		};
 		this.bindEvents();
 		this.syncViewControls();
+		this.applyTheme();
 		await this.loadRoot();
 	}
 
@@ -291,6 +297,7 @@ class VaultDeskApp {
 		const actions = {
 			section: () => this.openSection(target.dataset.section),
 			view: () => this.setView(target.dataset.view),
+			"toggle-theme": () => this.toggleTheme(),
 			retry: () => this.refresh(),
 			"open-folder": () => this.openFolder(target.dataset.id),
 			"column-open-folder": () => this.openColumnFolder(target.dataset.id, target.dataset.columnIndex),
@@ -352,8 +359,20 @@ class VaultDeskApp {
 		window.localStorage.setItem("vaultdesk-view", this.state.view);
 		this.ensureColumns();
 		this.syncViewControls();
+		this.animateViewIcon(nextView);
 		this.contentMotion = "is-switching-view";
 		this.renderContent();
+	}
+
+	animateViewIcon(view) {
+		const button = this.element.querySelector(
+			`.data-view-toggle [data-action="view"][data-view="${view}"]`
+		);
+		if (!button) return;
+		// Restart the icon's internal reaction animation on every switch.
+		button.classList.remove("is-anim");
+		void button.offsetWidth;
+		button.classList.add("is-anim");
 	}
 
 	createColumn(folder, items, title = "", options = {}) {
@@ -442,6 +461,36 @@ class VaultDeskApp {
 		const url = new URL(window.location.href);
 		url.searchParams.set("lang", language);
 		window.location.assign(url.toString());
+	}
+
+	effectiveTheme() {
+		if (this.theme === "dark" || this.theme === "light") return this.theme;
+		const deskTheme = document.documentElement.dataset.theme;
+		if (deskTheme === "dark") return "dark";
+		if (deskTheme === "light") return "light";
+		if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+		return "light";
+	}
+
+	applyTheme() {
+		if (this.theme === "dark" || this.theme === "light") {
+			this.element.dataset.vdTheme = this.theme;
+		} else {
+			delete this.element.dataset.vdTheme;
+		}
+		const toggle = this.element.querySelector('[data-role="theme-toggle"]');
+		if (!toggle) return;
+		const isDark = this.effectiveTheme() === "dark";
+		toggle.innerHTML = icon(isDark ? "sun" : "moon");
+		const label = this.i18n.t(isDark ? "theme.to_light" : "theme.to_dark");
+		toggle.setAttribute("aria-label", label);
+		toggle.setAttribute("title", label);
+	}
+
+	toggleTheme() {
+		this.theme = this.effectiveTheme() === "dark" ? "light" : "dark";
+		window.localStorage.setItem("vaultdesk-theme", this.theme);
+		this.applyTheme();
 	}
 
 	select(item) {
@@ -1100,6 +1149,21 @@ class VaultDeskApp {
 		this.element.querySelectorAll('[data-action="section"]').forEach((button) => {
 			button.classList.toggle("is-active", button.dataset.section === this.state.section);
 		});
+		this.positionViewIndicator();
+	}
+
+	positionViewIndicator() {
+		const toggle = this.element.querySelector(".data-view-toggle");
+		if (!toggle) return;
+		const indicator = toggle.querySelector(".data-view-toggle-indicator");
+		const active = toggle.querySelector('[data-action="view"].is-active');
+		if (!indicator || !active) return;
+		// Viewport-relative rects keep the pill aligned correctly in both LTR and RTL
+		// (offsetLeft is unreliable for flex children under RTL).
+		const toggleRect = toggle.getBoundingClientRect();
+		const activeRect = active.getBoundingClientRect();
+		indicator.style.width = `${activeRect.width}px`;
+		indicator.style.transform = `translateX(${activeRect.left - toggleRect.left}px)`;
 	}
 
 	activateSection(section) {
@@ -1313,4 +1377,8 @@ class VaultDeskApp {
 
 function normalizeView(view) {
 	return ["grid", "list", "columns"].includes(view) ? view : "grid";
+}
+
+function normalizeTheme(theme) {
+	return theme === "dark" || theme === "light" ? theme : null;
 }

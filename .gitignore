@@ -44,6 +44,9 @@ logs/
 *credentials*
 *secret*
 
+# Internal security review (kept private — not for the public repo)
+docs/SECURITY_REVIEW.md
+
 # Editors and operating system files
 .DS_Store
 .idea/

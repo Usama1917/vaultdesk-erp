@@ -22,6 +22,9 @@ export function renderShell(apiMode, i18n) {
 					<button class="data-btn data-btn-primary" data-action="choose-upload">
 						${icon("upload")}<span>${t("action.upload")}</span>
 					</button>
+					<button type="button" class="data-btn data-btn-secondary data-theme-toggle" data-action="toggle-theme" data-role="theme-toggle" aria-label="${t("theme.to_dark")}" title="${t("theme.to_dark")}">
+						${icon("moon")}
+					</button>
 					${apiMode === "mock" ? `
 						<label class="data-language" aria-label="${t("language.label")}">
 							<select data-role="language">
@@ -69,6 +72,7 @@ export function renderShell(apiMode, i18n) {
 								</select>
 							</label>
 							<div class="data-view-toggle" role="group" aria-label="${t("view.aria")}">
+								<span class="data-view-toggle-indicator" aria-hidden="true"></span>
 								<button type="button" class="is-active" data-action="view" data-view="grid" aria-label="${t("view.grid")}">
 									${icon("grid")}
 								</button>
