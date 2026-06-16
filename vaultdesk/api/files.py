@@ -5,7 +5,7 @@ from typing import Any
 import frappe
 from frappe import _
 
-from vaultdesk.api.utils import require_post
+from vaultdesk.api.utils import reject_cross_site_request, require_post
 from vaultdesk.services import items, security, state, storage
 
 
@@ -13,8 +13,7 @@ from vaultdesk.services import items, security, state, storage
 def upload_file(folder: str) -> dict[str, Any]:
     """Accept multipart field `file` and store it as private protected content."""
     require_post()
-    parent = items.get_item(folder)
-    security.require(parent, "upload")
+    parent = security.require_item_access(folder, "upload")
     items.assert_item_type(parent, True)
     items.require_active(parent)
     return storage.create_uploaded_file(parent)
@@ -58,8 +57,8 @@ def move_file(file: str, destination_folder: str) -> dict[str, Any]:
 @frappe.whitelist()
 def download_file(file: str) -> None:
     """Deliver private bytes only after current view and download checks."""
-    item = items.get_item(file)
-    security.require(item, "view")
+    reject_cross_site_request()
+    item = security.require_item_access(file, "view")
     security.require(item, "download")
     items.require_active(item)
     items.assert_item_type(item, False)
@@ -69,8 +68,8 @@ def download_file(file: str) -> None:
 @frappe.whitelist()
 def preview_file(file: str) -> None:
     """Deliver safe private preview bytes after fresh view/content checks."""
-    item = items.get_item(file)
-    security.require(item, "view")
+    reject_cross_site_request()
+    item = security.require_item_access(file, "view")
     security.require(item, "download")
     items.require_active(item)
     items.assert_item_type(item, False)
@@ -79,9 +78,13 @@ def preview_file(file: str) -> None:
 
 @frappe.whitelist()
 def get_preview_info(file: str) -> dict[str, Any]:
-    """Describe secure preview presentation without exposing storage references."""
-    item = items.get_item(file)
-    security.require(item, "view")
+    """Describe secure preview presentation without exposing storage references.
+
+    POST-only: it records a 'Viewed' audit event and recent-state, so it must not be triggerable
+    by a cross-site GET (VD-CSRF-001).
+    """
+    require_post()
+    item = security.require_item_access(file, "view")
     items.require_active(item)
     items.assert_item_type(item, False)
     return storage.preview_info(item)
@@ -89,7 +92,11 @@ def get_preview_info(file: str) -> dict[str, Any]:
 
 @frappe.whitelist()
 def get_file_details(file: str) -> dict[str, Any]:
-    """Return file metadata and permitted actions without native storage fields."""
+    """Return file metadata and permitted actions without native storage fields.
+
+    POST-only: get_details records a 'Viewed' audit event and recent-state (VD-CSRF-001).
+    """
+    require_post()
     details = items.get_details(file)
     if details["type"] != "file":
         frappe.throw(_("The requested VaultDesk Item is not a file."))

@@ -55,10 +55,15 @@ def effective_permissions(item: Any, user: str | None = None) -> dict[str, bool]
             continue
         for capability, fieldname in CAPABILITY_FIELDS.items():
             result[capability] = result[capability] or bool(cint(grant.get(fieldname)))
-    # Business owners retain sharing administration authority by product policy.
-    # This does not silently restore view or download access after revocation.
-    if item.business_owner == user:
-        result["manage_permissions"] = True
+    # Ownership confers no implicit authority. `business_owner` is attacker-controllable
+    # (every creator owns what they create via new_item), so granting it an implicit
+    # `manage_permissions` let any user holding `upload` mint a self-managed subtree,
+    # delegate rights and break_inheritance to escape the parent ACL boundary (VD-002).
+    # The recoverable owner of a Space instead receives an *explicit*, revocable grant
+    # seeded by `permissions.create_root_owner_grant`; sub-managers are delegated
+    # explicitly and remain bound by `_ensure_delegable`. This also keeps this analyzer
+    # consistent with the SQL `get_permission_query_conditions` hook (which never trusts
+    # ownership), so direct list reads and computed access cannot diverge.
     return result
 
 
@@ -72,20 +77,51 @@ def can(item: Any, capability: str, user: str | None = None) -> bool:
 
 
 def public_effective_permissions(item_name: str, user: str | None = None) -> dict[str, bool]:
-    """Return caller rights without making access-hint APIs useful for ID probing."""
+    """Return caller rights without making access-hint APIs useful for ID probing.
+
+    Mirrors the execution path's gating (active space, not trashed) so a usability hint can
+    never report access the enforcing endpoints would refuse (VD-INFO-003).
+    """
     denied = {capability: False for capability in CAPABILITIES}
     try:
         item = frappe.get_doc("VaultDesk Item", item_name)
     except frappe.DoesNotExistError:
         return denied
+    if item.trash_root or not _space_is_active(item):
+        return denied
     resolved = effective_permissions(item, user)
     return resolved if resolved.get("view") else denied
+
+
+def deny() -> None:
+    """Raise the single uniform authorization error used across VaultDesk.
+
+    Missing items, forbidden items and unknown grants all funnel through this identical
+    PermissionError so endpoints cannot be turned into an existence oracle (404 vs 403).
+    """
+    frappe.throw(_("Not permitted for this VaultDesk item."), frappe.PermissionError)
 
 
 def require(item: Any, capability: str, user: str | None = None) -> None:
     """Reject an operation unless the current user has the required capability."""
     if not can(item, capability, user):
-        frappe.throw(_("Not permitted for this VaultDesk item."), frappe.PermissionError)
+        deny()
+
+
+def require_item_access(item_name: str, capability: str, user: str | None = None) -> Any:
+    """Load an item and authorize a capability, masking existence behind a uniform 403.
+
+    A non-existent item and an existing-but-forbidden item raise the identical
+    PermissionError, so a caller cannot probe which random item names are valid
+    (VD-IDOR-001/002).
+    """
+    try:
+        item = frappe.get_doc("VaultDesk Item", item_name)
+    except frappe.DoesNotExistError:
+        item = None
+    if item is None or not can(item, capability, user):
+        deny()
+    return item
 
 
 def get_permission_query_conditions(user: str | None = None) -> str:
@@ -164,6 +200,51 @@ def has_doctype_permission(
     return can(doc, capability, user)
 
 
+def has_file_permission(
+    doc: Any,
+    user: str | None = None,
+    permission_type: str | None = None,
+    ptype: str | None = None,
+    **kwargs: Any,
+) -> bool | None:
+    """Keep VaultDesk-managed private binaries reachable only through checked downloads.
+
+    Returns None (no opinion) for any File VaultDesk does not manage, so ordinary ERPNext
+    attachments are unaffected. For a File backing a VaultDesk Item it denies *all* direct
+    access to non-administrators: the bytes must flow through the permission-checked
+    `storage.download`/`storage.preview` path, never the raw `/private/files` route or the
+    File list view (VD-FILE-10). The service layer reads the File via `frappe.get_doc`
+    (no permission check), so this hook never blocks VaultDesk's own authorized downloads.
+    """
+    name = getattr(doc, "name", None)
+    if not name:
+        return None
+    if not frappe.db.exists("VaultDesk Item", {"native_file": name}):
+        return None
+    return is_vaultdesk_administrator(user)
+
+
+def set_vaultdesk_response_headers(response: Any, request: Any) -> Any:
+    """`after_request` hook: add sniffing protections to VaultDesk binary/preview responses.
+
+    Scoped to VaultDesk's own download/preview endpoints by request path, so unrelated ERPNext
+    responses are never touched (the app does not modify core). `X-Content-Type-Options: nosniff`
+    stops a browser from re-interpreting checked bytes as an active type, and the restrictive CSP
+    neutralizes any HTML-ish payload on a direct hit to these URLs (VD-PREVIEW-02). A response
+    hook must never raise, so failures are swallowed.
+    """
+    try:
+        path = getattr(request, "path", "") or ""
+        if "vaultdesk.api.files.preview_file" in path or "vaultdesk.api.files.download_file" in path:
+            response.headers["X-Content-Type-Options"] = "nosniff"
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'none'; img-src 'self' blob: data:; object-src 'none'; sandbox"
+            )
+    except Exception:
+        pass
+    return response
+
+
 def _inheritance_scope(item: Any) -> list[str]:
     ancestors = frappe.get_all(
         "VaultDesk Item",
@@ -183,6 +264,16 @@ def _inheritance_scope(item: Any) -> list[str]:
     return scope
 
 
+def inheritance_scope_root(item: Any) -> str | None:
+    """Return the nearest ACL boundary at or above an item.
+
+    Two locations share an inheritance scope (the same source of effective grants) when
+    this value matches; used to detect a move that would cross ACL contexts (VD-001).
+    """
+    scope = _inheritance_scope(_as_item_doc(item))
+    return scope[-1] if scope else None
+
+
 def _as_item_doc(item: Any) -> Any:
     if isinstance(item, str):
         return frappe.get_doc("VaultDesk Item", item)
@@ -196,3 +287,13 @@ def _space_is_active(item: Any) -> bool:
 def validate_capability(capability: str) -> None:
     if capability not in CAPABILITIES:
         frappe.throw(_("Unknown VaultDesk capability: {0}").format(capability))
+
+
+def escape_like(value: str) -> str:
+    """Neutralize LIKE wildcards in user input so a search term cannot widen its own scan.
+
+    Values are already passed as bound parameters (so this is not an SQLi fix); escaping
+    `%`, `_` and the escape character keeps `%`-only queries from scanning every row
+    (VD-SQLI-01). MariaDB/MySQL honor backslash as the default LIKE escape character.
+    """
+    return (value or "").replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")

@@ -36,9 +36,7 @@ def update_grant(
     expires_on: str | None = None,
 ) -> dict[str, Any]:
     """Replace the capabilities of an existing explicit grant."""
-    grant = frappe.get_doc("VaultDesk Permission", grant_name)
-    item = frappe.get_doc("VaultDesk Item", grant.vaultdesk_item)
-    security.require(item, "manage_permissions")
+    grant, item = _grant_for_management(grant_name)
     normalized = _normalize_capabilities(capabilities)
     _ensure_delegable(item, normalized)
     _apply_capabilities(grant, normalized)
@@ -52,9 +50,7 @@ def update_grant(
 
 def remove_grant(grant_name: str) -> None:
     """Remove one explicit grant while preserving ACL-boundary recovery."""
-    grant = frappe.get_doc("VaultDesk Permission", grant_name)
-    item = frappe.get_doc("VaultDesk Item", grant.vaultdesk_item)
-    security.require(item, "manage_permissions")
+    grant, item = _grant_for_management(grant_name)
     principal = grant.principal_key
     grant.flags.from_vaultdesk_service = True
     grant.delete(ignore_permissions=True)
@@ -64,8 +60,7 @@ def remove_grant(grant_name: str) -> None:
 
 def get_explicit_grants(item_name: str) -> list[dict[str, Any]]:
     """Return explicit ACL rows only to users who can administer sharing."""
-    item = frappe.get_doc("VaultDesk Item", item_name)
-    security.require(item, "manage_permissions")
+    item = security.require_item_access(item_name, "manage_permissions")
     grants = frappe.get_all(
         "VaultDesk Permission",
         filters={"vaultdesk_item": item.name},
@@ -77,8 +72,7 @@ def get_explicit_grants(item_name: str) -> list[dict[str, Any]]:
 
 def get_permission_overview(item_name: str) -> dict[str, Any]:
     """Return ownership plus direct and inherited ACL rows for permission managers."""
-    item = frappe.get_doc("VaultDesk Item", item_name)
-    security.require(item, "manage_permissions")
+    item = security.require_item_access(item_name, "manage_permissions")
     direct_grants = _grants_for_item(item, scope="direct", editable=True)
     inherited_grants: list[dict[str, Any]] = []
     inherited_sources: list[dict[str, Any]] = []
@@ -116,13 +110,13 @@ def search_principals(
     page_length: int = 10,
 ) -> list[dict[str, str]]:
     """Search shareable enabled users or ERP roles for an authorized manager."""
-    item = frappe.get_doc("VaultDesk Item", item_name)
-    security.require(item, "manage_permissions")
+    security.require_item_access(item_name, "manage_permissions")
     query = (query or "").strip()
     if len(query) < 2:
         return []
     page_length = min(max(cint(page_length), 1), 20)
-    like_query = f"%{query}%"
+    escaped = security.escape_like(query)
+    like_query = f"%{escaped}%"
     if principal_type == "User":
         rows = frappe.db.sql(
             """
@@ -136,7 +130,7 @@ def search_principals(
                 full_name, name
             LIMIT %(page_length)s
             """,
-            {"query": like_query, "starts": f"{query}%", "page_length": page_length},
+            {"query": like_query, "starts": f"{escaped}%", "page_length": page_length},
             as_dict=True,
         )
     elif principal_type == "Role":
@@ -150,7 +144,7 @@ def search_principals(
                 name
             LIMIT %(page_length)s
             """,
-            {"query": like_query, "starts": f"{query}%", "page_length": page_length},
+            {"query": like_query, "starts": f"{escaped}%", "page_length": page_length},
             as_dict=True,
         )
     else:
@@ -163,8 +157,7 @@ def search_principals(
 
 def set_inheritance_boundary(item_name: str, enabled: bool) -> dict[str, Any]:
     """Enable or remove custom ACL inheritance on an authorized item."""
-    item = frappe.get_doc("VaultDesk Item", item_name)
-    security.require(item, "manage_permissions")
+    item = security.require_item_access(item_name, "manage_permissions")
     enabled = bool(cint(enabled))
     if not item.parent_vaultdesk_item and not enabled:
         frappe.throw(_("A VaultDesk Space root must remain an inheritance boundary."))
@@ -228,8 +221,8 @@ def _upsert_grant(
     capabilities: dict[str, Any],
     expires_on: str | None,
 ) -> dict[str, Any]:
-    item = frappe.get_doc("VaultDesk Item", item_name)
-    security.require(item, "manage_permissions")
+    item = security.require_item_access(item_name, "manage_permissions")
+    _validate_principal(principal_type, principal)
     normalized = _normalize_capabilities(capabilities)
     _ensure_delegable(item, normalized)
     principal_key = f"{principal_type.lower()}:{principal}"
@@ -254,6 +247,44 @@ def _upsert_grant(
     _ensure_boundary_manager(item)
     audit.record(item, action, affected_principal=principal_key)
     return serialize_grant(grant)
+
+
+def _grant_for_management(grant_name: str) -> tuple[Any, Any]:
+    """Load a grant plus its item for an authorized manager, masking existence as a 403.
+
+    An unknown grant name and a grant on an item the caller cannot administer both raise the
+    identical PermissionError, so the grant-mutation endpoints cannot confirm whether an
+    arbitrary grant row exists (VD-IDOR-002).
+    """
+    try:
+        grant = frappe.get_doc("VaultDesk Permission", grant_name)
+    except frappe.DoesNotExistError:
+        grant = None
+    if grant is None:
+        security.deny()
+    item = security.require_item_access(grant.vaultdesk_item, "manage_permissions")
+    return grant, item
+
+
+def _validate_principal(principal_type: str, principal: str) -> None:
+    """Refuse grants to the Guest user or to disabled/unknown principals (VD-007).
+
+    A grant to a disabled account is inert today but silently restores access the moment the
+    account is re-enabled; rejecting it up front keeps the stored ACL honest.
+    """
+    if principal_type == "User":
+        if not principal or principal == "Guest":
+            frappe.throw(_("VaultDesk access cannot be granted to the Guest user."))
+        enabled = frappe.db.get_value("User", principal, "enabled")
+        if enabled is None:
+            frappe.throw(_("Unknown user: {0}.").format(principal))
+        if not cint(enabled):
+            frappe.throw(_("VaultDesk access cannot be granted to a disabled user."))
+    elif principal_type == "Role":
+        if not principal or not frappe.db.exists("Role", principal):
+            frappe.throw(_("Unknown role: {0}.").format(principal))
+    else:
+        frappe.throw(_("Principal Type must be User or Role."))
 
 
 def _normalize_capabilities(capabilities: dict[str, Any]) -> dict[str, bool]:

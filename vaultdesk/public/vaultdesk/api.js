@@ -141,7 +141,8 @@ export class LiveVaultDeskApi {
 	}
 
 	async getPreviewInfo(item) {
-		return this.call("vaultdesk.api.files.get_preview_info", { file: item.name });
+		// POST: this endpoint records a "Viewed" audit event, so it is not a CSRF-safe GET.
+		return this.call("vaultdesk.api.files.get_preview_info", { file: item.name }, true);
 	}
 
 	async loadPreviewContent(item, kind) {

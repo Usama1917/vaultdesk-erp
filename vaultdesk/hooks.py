@@ -17,4 +17,9 @@ permission_query_conditions = {
 
 has_permission = {
     "VaultDesk Item": "vaultdesk.services.security.has_doctype_permission",
+    # Keep VaultDesk-managed private binaries reachable only through the checked download path.
+    "File": "vaultdesk.services.security.has_file_permission",
 }
+
+# Harden VaultDesk's own binary/preview responses against content-type sniffing.
+after_request = ["vaultdesk.services.security.set_vaultdesk_response_headers"]

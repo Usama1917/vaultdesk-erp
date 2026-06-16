@@ -19,7 +19,9 @@ def touch(item: Any, event: str = "opened", user: str | None = None) -> None:
     if state_name:
         state = frappe.get_doc("VaultDesk User Item State", state_name)
     else:
-        state = frappe.get_doc({"doctype": "VaultDesk User Item State", "user": user, "vaultdesk_item": item.name})
+        state = frappe.get_doc(
+            {"doctype": "VaultDesk User Item State", "user": user, "vaultdesk_item": item.name}
+        )
 
     timestamp_field = {
         "opened": "last_opened_on",
@@ -47,7 +49,9 @@ def set_starred(item: Any, starred: bool, user: str | None = None) -> None:
     state = (
         frappe.get_doc("VaultDesk User Item State", state_name)
         if state_name
-        else frappe.get_doc({"doctype": "VaultDesk User Item State", "user": user, "vaultdesk_item": item.name})
+        else frappe.get_doc(
+            {"doctype": "VaultDesk User Item State", "user": user, "vaultdesk_item": item.name}
+        )
     )
     state.is_starred = cint(starred)
     state.flags.from_vaultdesk_service = True
