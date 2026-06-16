@@ -30,9 +30,10 @@ def create_uploaded_file(folder: Any) -> dict[str, Any]:
     original_name = _safe_filename(uploaded.filename)
     extension = os.path.splitext(original_name)[1].lower().lstrip(".")
     settings = frappe.get_single("VaultDesk Settings")
-    _validate_declared_upload_size(settings)
-    content = uploaded.stream.read()
-    _validate_upload(extension, content, settings)
+    max_size = _max_upload_bytes(settings)
+    _reject_declared_oversize(max_size)
+    content = _read_within_limit(uploaded.stream, max_size)
+    _validate_upload(extension, content, settings, max_size=max_size)
     mime_type = _mime_type(original_name, uploaded.content_type)
     native_file = frappe.get_doc(
         {
@@ -57,7 +58,9 @@ def create_uploaded_file(folder: Any) -> dict[str, Any]:
         file_size=len(content),
         content_hash=hashlib.sha256(content).hexdigest(),
         storage_backend="Frappe Private File",
-        preview_status="Available" if preview_kind_values(mime_type, extension) != "unsupported" else "Unsupported",
+        preview_status=(
+            "Available" if preview_kind_values(mime_type, extension) != "unsupported" else "Unsupported"
+        ),
     )
     audit.record(
         item,
@@ -93,6 +96,8 @@ def preview(item: Any) -> None:
     if kind == "text":
         content = content[:MAX_TEXT_PREVIEW_BYTES]
         content_type = "text/plain; charset=utf-8"
+    else:
+        _assert_preview_signature(kind, content, content_type)
     audit.record(item, "Previewed")
     state.touch(item, "previewed")
     _binary_response(item.display_name, content, content_type, inline=True)
@@ -137,8 +142,8 @@ def _request_file() -> Any:
     return uploaded
 
 
-def _validate_upload(extension: str, content: bytes, settings: Any) -> None:
-    max_size = cint(settings.max_upload_size_mb or 10) * 1024 * 1024
+def _validate_upload(extension: str, content: bytes, settings: Any, *, max_size: int | None = None) -> None:
+    max_size = max_size if max_size is not None else _max_upload_bytes(settings)
     if len(content) > max_size:
         frappe.throw(_("File exceeds the VaultDesk upload size limit."))
     allowed = {
@@ -152,12 +157,61 @@ def _validate_upload(extension: str, content: bytes, settings: Any) -> None:
         frappe.throw(_("This file extension is not allowed in VaultDesk."))
 
 
-def _validate_declared_upload_size(settings: Any) -> None:
-    """Reject obviously oversized multipart requests before reading their body into memory."""
-    max_size = cint(settings.max_upload_size_mb or 10) * 1024 * 1024
+def _max_upload_bytes(settings: Any) -> int:
+    return cint(settings.max_upload_size_mb or 10) * 1024 * 1024
+
+
+def _reject_declared_oversize(max_size: int) -> None:
+    """Reject an oversized multipart request early when it honestly declares its length."""
     request_size = cint(getattr(frappe.request, "content_length", 0) or 0)
-    if request_size and request_size > max_size + (1024 * 1024):
+    if request_size and request_size > max_size:
         frappe.throw(_("File exceeds the VaultDesk upload size limit."))
+
+
+def _read_within_limit(stream: Any, max_size: int) -> bytes:
+    """Read an upload body in bounded chunks, refusing to buffer past the size cap.
+
+    The early check trusts a client-supplied Content-Length, so a forged length or a chunked
+    transfer-encoding request could otherwise stream an unbounded body into memory
+    (VD-UPLOAD-01). This never holds more than ``max_size + 1`` bytes before aborting.
+    """
+    buffer = bytearray()
+    while True:
+        remaining = max_size + 1 - len(buffer)
+        if remaining <= 0:
+            frappe.throw(_("File exceeds the VaultDesk upload size limit."))
+        chunk = stream.read(min(1024 * 1024, remaining))
+        if not chunk:
+            break
+        buffer.extend(chunk)
+    if len(buffer) > max_size:
+        frappe.throw(_("File exceeds the VaultDesk upload size limit."))
+    return bytes(buffer)
+
+
+# Leading bytes that must match the declared type before content is rendered inline. Defeats
+# polyglots that pass extension + MIME allowlists but would be sniffed as something active.
+_PREVIEW_SIGNATURES: dict[str, tuple[bytes, ...]] = {
+    "image/png": (b"\x89PNG\r\n\x1a\n",),
+    "image/jpeg": (b"\xff\xd8\xff",),
+    "image/gif": (b"GIF87a", b"GIF89a"),
+    "image/webp": (b"RIFF",),
+}
+
+
+def _assert_preview_signature(kind: str, content: bytes, mime_type: str | None) -> None:
+    """Refuse inline preview when stored bytes do not match their declared image/PDF type."""
+    mime = (mime_type or "").lower()
+    if kind == "pdf":
+        if not content.startswith(b"%PDF-"):
+            frappe.throw(_("Stored content does not match its declared type; preview blocked."))
+        return
+    if kind == "image":
+        signatures = _PREVIEW_SIGNATURES.get(mime)
+        if signatures and not content.startswith(signatures):
+            frappe.throw(_("Stored content does not match its declared type; preview blocked."))
+        if mime == "image/webp" and (len(content) < 12 or content[8:12] != b"WEBP"):
+            frappe.throw(_("Stored content does not match its declared type; preview blocked."))
 
 
 def _storage_user() -> str:

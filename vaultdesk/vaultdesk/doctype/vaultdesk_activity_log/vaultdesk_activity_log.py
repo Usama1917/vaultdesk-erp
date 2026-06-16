@@ -10,7 +10,10 @@ class VaultDeskActivityLog(Document):
 
     def before_insert(self) -> None:
         if not self.flags.from_vaultdesk_service:
-            frappe.throw(_("Activity records are written only by the VaultDesk service."), frappe.PermissionError)
+            frappe.throw(
+                _("Activity records are written only by the VaultDesk service."),
+                frappe.PermissionError,
+            )
 
     def validate(self) -> None:
         if not self.is_new():

@@ -58,7 +58,16 @@ Admin roles that bypass ACL: `System Manager`, `VaultDesk Administrator` (+ `Adm
 - **Live** (`api.js` → `LiveVaultDeskApi`): used by the installed Desk Page; calls the whitelisted Python methods.
 - **Mock** (`mock_api.js` → `MockVaultDeskApi`): in-browser memory only; used by the standalone preview. No server, no persistence, resets on refresh.
 
-`index.html` always selects mock; the Desk page always selects live. i18n (`i18n.js`) drives English/LTR + Arabic/RTL. Components live in `public/vaultdesk/components/`.
+`index.html` always selects mock; the Desk page always selects live. i18n (`i18n.js`) drives English/LTR + Arabic/RTL. Components live in `public/vaultdesk/components/`. The UI is dependency-free vanilla ES modules + CSS — **no build step, no npm**. `initialize()` sets `dir`/`lang` on the mount in **both** modes so RTL applies inside Desk (only mock additionally mutates `document.documentElement`).
+
+### Design system & theming (`vaultdesk.css`)
+- "Warm Editorial" palette as `--data-*` custom properties scoped to **`.vaultdesk-mount`** (never `:root` — Desk owns `:root`). Colors are fully tokenized; do not reintroduce inline hex literals (dark mode depends on it).
+- **Light + dark.** The dark token block binds to `html[data-theme="dark"] .vaultdesk-mount` (follows Frappe Desk's theme) **and** `.vaultdesk-mount[data-vd-theme="dark"]` (self toggle via the header sun/moon button → `toggleTheme()`, persisted in `localStorage["vaultdesk-theme"]`), plus a `prefers-color-scheme` fallback.
+- **Fonts (self-hosted, unicode-range split — unique family names on purpose).** Latin/English → **Rubik** as family `"VaultDesk Rubik"` (`fonts/rubik/`); Arabic → **IBM Plex Sans Arabic** as `"VaultDesk Plex Arabic"` (`fonts/ibm-plex-arabic/`). The unique names avoid colliding with a system-installed Latin-only "Rubik", which otherwise breaks Arabic. **All digits render as Latin/English** — `formatDate` (`utils.js`) forces `numberingSystem: "latn"`, and digits resolve to Rubik via the latin range.
+- **Motion.** Tokenized durations/easings; honors `prefers-reduced-motion`. The view switcher has a sliding pill indicator (`positionViewIndicator()`, measured via `getBoundingClientRect` so it is RTL-correct) and per-view icon reactions (`.is-anim` on the active toggle button animates the icon's SVG internals: grid squares vibrate, list rows reshuffle, column dividers split).
+
+### Local preview cache
+`index.html` cache-busts `vaultdesk.css`/`app.js` with a `?v=` query — bump it when iterating. The font woff2 and the `./components/*` module imports are **not** versioned, so serve the preview with no-store headers (or hard-reload) to avoid stale assets while developing.
 
 ## Commands
 
@@ -94,7 +103,9 @@ No test suite exists yet — Frappe integration tests for ACL/uploads/concurrenc
 
 ## Reference docs (`docs/`)
 
-`BACKEND_API.md` (API/security boundary), `FRONTEND_UI.md`, `PERMISSIONS_UI.md`, `PREVIEW_UI.md`, `VERSION_HISTORY_UI.md`, and **`SECURITY_TEST_PLAN.md`** — read the security test plan before changing any ACL, upload, preview or sharing behavior.
+`BACKEND_API.md` (API/security boundary), `FRONTEND_UI.md`, `PERMISSIONS_UI.md`, `PREVIEW_UI.md`, `VERSION_HISTORY_UI.md`, **`SECURITY_TEST_PLAN.md`** (read before changing any ACL, upload, preview or sharing behavior), and **`ERP_INTEGRATION_READINESS.md`** (what's required to embed `/app/vaultdesk` in live Desk: `bench build` is mandatory, RTL-on-mount, the still-missing Shared/Trash backends, and no shipped Workspace shortcut).
+
+`docs/SECURITY_REVIEW.md` is a **local-only** audit (exploit detail for unpatched findings) — it is git-ignored and intentionally kept out of the public repo.
 
 ## Security caveats from README
 

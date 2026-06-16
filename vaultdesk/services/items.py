@@ -43,8 +43,7 @@ def create_space_root(space: Any) -> Any:
 
 def create_folder(parent_name: str, display_name: str) -> dict[str, Any]:
     """Create an inheriting child folder after checking destination upload access."""
-    parent = get_item(parent_name)
-    security.require(parent, "upload")
+    parent = security.require_item_access(parent_name, "upload")
     assert_item_type(parent, True)
     require_active(parent)
     folder = new_item(
@@ -59,8 +58,7 @@ def create_folder(parent_name: str, display_name: str) -> dict[str, Any]:
 
 def rename_item(item_name: str, display_name: str, *, folder_only: bool | None = None) -> dict[str, Any]:
     """Rename a logical item while leaving its physical private path untouched."""
-    item = get_item(item_name)
-    security.require(item, "edit")
+    item = security.require_item_access(item_name, "edit")
     assert_item_type(item, folder_only)
     require_active(item)
     old_name = item.display_name
@@ -71,14 +69,12 @@ def rename_item(item_name: str, display_name: str, *, folder_only: bool | None =
 
 
 def move_item(item_name: str, destination_name: str, *, folder_only: bool | None = None) -> dict[str, Any]:
-    """Move an item; `move` rights deliberately carry inheritance-change authority."""
-    item = get_item(item_name)
-    security.require(item, "move")
+    """Move an item; crossing ACL contexts additionally requires manage_permissions (VD-001)."""
+    item = security.require_item_access(item_name, "move")
     assert_item_type(item, folder_only)
     require_active(item)
     _require_not_root(item)
-    destination = get_item(destination_name)
-    security.require(destination, "upload")
+    destination = security.require_item_access(destination_name, "upload")
     assert_item_type(destination, True)
     require_active(destination)
     if item.space != destination.space:
@@ -88,6 +84,7 @@ def move_item(item_name: str, destination_name: str, *, folder_only: bool | None
     source_parent = item.parent_vaultdesk_item
     if source_parent == destination.name:
         return serialize(item)
+    _require_move_authority(item, destination)
     item.parent_vaultdesk_item = destination.name
     _save_item(item)
     audit.record(item, "Moved", source_parent=source_parent, target_parent=destination.name)
@@ -96,8 +93,7 @@ def move_item(item_name: str, destination_name: str, *, folder_only: bool | None
 
 def trash_item(item_name: str, *, folder_only: bool | None = None) -> dict[str, Any]:
     """Soft-delete an item after authorizing every descendant changed with it."""
-    item = get_item(item_name)
-    security.require(item, "delete")
+    item = security.require_item_access(item_name, "delete")
     assert_item_type(item, folder_only)
     require_active(item)
     _require_not_root(item)
@@ -111,6 +107,11 @@ def trash_item(item_name: str, *, folder_only: bool | None = None) -> dict[str, 
     item.purge_after = add_days(item.trashed_on, retention_days)
     _save_item(item)
     if item.is_group:
+        # Re-read the just-saved nested-set bounds under a row lock so a concurrent move()
+        # cannot leave us marking the wrong descendant set by stale lft/rgt (VD-RACE-07).
+        bounds = frappe.db.get_value(
+            "VaultDesk Item", item.name, ["lft", "rgt"], for_update=True, as_dict=True
+        )
         frappe.db.sql(
             """
             UPDATE `tabVaultDesk Item`
@@ -119,7 +120,7 @@ def trash_item(item_name: str, *, folder_only: bool | None = None) -> dict[str, 
               AND lft > %(lft)s AND rgt < %(rgt)s
               AND COALESCE(trash_root, '') = ''
             """,
-            {"root": item.name, "space": item.space, "lft": item.lft, "rgt": item.rgt},
+            {"root": item.name, "space": item.space, "lft": bounds.lft, "rgt": bounds.rgt},
         )
     audit.record(
         item,
@@ -137,14 +138,14 @@ def restore_item(
     folder_only: bool | None = None,
 ) -> dict[str, Any]:
     """Restore an explicitly trashed item into an active permitted folder."""
-    item = get_item(item_name)
-    security.require(item, "delete")
+    item = security.require_item_access(item_name, "delete")
     assert_item_type(item, folder_only)
     if not cint(item.is_trashed) or item.trash_root != item.name:
         frappe.throw(_("Only the top-level trashed item can be restored."))
     descendant_count = _require_subtree_delete_access(item, trash_root=item.name) if item.is_group else 0
-    destination = get_item(destination_name or item.original_parent_vaultdesk_item)
-    security.require(destination, "upload")
+    destination = security.require_item_access(
+        destination_name or item.original_parent_vaultdesk_item, "upload"
+    )
     assert_item_type(destination, True)
     require_active(destination)
     if destination.space != item.space:
@@ -160,7 +161,12 @@ def restore_item(
         "UPDATE `tabVaultDesk Item` SET trash_root = NULL WHERE trash_root = %s",
         item.name,
     )
-    audit.record(item, "Restored", target_parent=destination.name, details={"descendant_count": descendant_count})
+    audit.record(
+        item,
+        "Restored",
+        target_parent=destination.name,
+        details={"descendant_count": descendant_count},
+    )
     return serialize(item)
 
 
@@ -174,8 +180,7 @@ def list_folder(
     include_trashed: bool = False,
 ) -> dict[str, Any]:
     """Return only visible direct children of a folder."""
-    folder = get_item(folder_name)
-    security.require(folder, "view")
+    folder = security.require_item_access(folder_name, "view")
     assert_item_type(folder, True)
     require_active(folder)
     if include_trashed:
@@ -203,8 +208,7 @@ def list_folder(
 
 def breadcrumbs(item_name: str) -> list[dict[str, Any]]:
     """Return accessible ancestors only, preventing restricted parent-name leakage."""
-    item = get_item(item_name)
-    security.require(item, "view")
+    item = security.require_item_access(item_name, "view")
     ancestors = frappe.get_all(
         "VaultDesk Item",
         filters=[
@@ -220,8 +224,7 @@ def breadcrumbs(item_name: str) -> list[dict[str, Any]]:
 
 def folder_tree(parent_name: str) -> list[dict[str, Any]]:
     """Lazy-load visible active subfolders below one permitted parent."""
-    parent = get_item(parent_name)
-    security.require(parent, "view")
+    parent = security.require_item_access(parent_name, "view")
     assert_item_type(parent, True)
     require_active(parent)
     folders = frappe.get_all(
@@ -247,7 +250,10 @@ def search(query: str, *, start: int = 0, page_length: int = DEFAULT_PAGE_LENGTH
     page_length = min(max(cint(page_length), 1), MAX_PAGE_LENGTH)
     candidates = frappe.get_all(
         "VaultDesk Item",
-        filters={"display_name": ["like", f"%{query}%"], "trash_root": ["is", "not set"]},
+        filters={
+            "display_name": ["like", f"%{security.escape_like(query)}%"],
+            "trash_root": ["is", "not set"],
+        },
         fields=["name"],
         order_by="modified desc",
         limit_page_length=MAX_SEARCH_SCAN,
@@ -298,8 +304,7 @@ def starred_items(page_length: int = DEFAULT_PAGE_LENGTH) -> list[dict[str, Any]
 
 def get_details(item_name: str) -> dict[str, Any]:
     """Retrieve permitted metadata and mark a file as recently opened."""
-    item = get_item(item_name)
-    security.require(item, "view")
+    item = security.require_item_access(item_name, "view")
     require_active(item)
     if not item.is_group:
         state.touch(item, "opened")
@@ -390,6 +395,23 @@ def _clean_display_name(display_name: str) -> str:
 def _require_not_root(item: Any) -> None:
     if not item.parent_vaultdesk_item:
         frappe.throw(_("A VaultDesk Space root folder cannot be moved or deleted."))
+
+
+def _require_move_authority(item: Any, destination: Any) -> None:
+    """Block a plain `move` right from escalating access by relocating across ACL contexts.
+
+    An item that is itself an inheritance boundary keeps its own ACL wherever it lands, and a
+    move within the same inheritance scope leaves every effective grant unchanged — both are
+    safe with just `move` + destination `upload`. But moving a non-boundary item into a
+    *different* scope rebinds the effective ACL of the item and its open descendants (e.g.
+    view -> download on content the actor could previously only view). Authorizing that ACL
+    change requires `manage_permissions` on the moved item (VD-001).
+    """
+    if cint(item.break_inheritance):
+        return
+    if security.inheritance_scope_root(item) == security.inheritance_scope_root(destination):
+        return
+    security.require(item, "manage_permissions")
 
 
 def _require_subtree_delete_access(item: Any, *, trash_root: str | None = None) -> int:

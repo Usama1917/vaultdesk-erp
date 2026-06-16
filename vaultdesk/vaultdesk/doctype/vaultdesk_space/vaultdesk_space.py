@@ -10,7 +10,10 @@ class VaultDeskSpace(Document):
 
     def validate(self) -> None:
         if self.root_item and self.has_value_changed("root_item") and not self.flags.from_vaultdesk_service:
-            frappe.throw(_("Root Folder can only be assigned by the VaultDesk service."), frappe.PermissionError)
+            frappe.throw(
+                _("Root Folder can only be assigned by the VaultDesk service."),
+                frappe.PermissionError,
+            )
 
     def after_insert(self) -> None:
         """Create a restricted root folder and grant its business owner control."""
@@ -20,7 +23,10 @@ class VaultDeskSpace(Document):
 
     def on_trash(self) -> None:
         frappe.throw(
-            _("VaultDesk Spaces cannot be deleted directly; deactivate the space and retain its audit history."),
+            _(
+                "VaultDesk Spaces cannot be deleted directly; deactivate the space and"
+                " retain its audit history."
+            ),
             frappe.PermissionError,
         )
 
